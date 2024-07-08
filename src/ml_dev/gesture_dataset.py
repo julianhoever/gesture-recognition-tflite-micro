@@ -8,10 +8,10 @@ import tensorflow as tf
 LABEL_NAMES = ["idle", "snake", "updown", "wave"]
 
 
-def load_gesture_dataset(
-    data_root: Path, train_split: bool, window_size: int = 125, stride: int = 1
-) -> tf.data.Dataset:
-    split = "training" if train_split else "testing"
+def load_gesture_data(
+    data_root: Path, training: bool, window_size: int = 125, stride: int = 1
+) -> tuple[tf.Tensor, tf.Tensor]:
+    split = "training" if training else "testing"
 
     sample_fragments, label_fragments = [], []
 
@@ -21,15 +21,15 @@ def load_gesture_dataset(
                 raw_obj = cbor2.load(in_file)
                 signal = np.array(raw_obj["payload"]["values"], dtype=np.float32)
                 windows = _extract_running_windows(signal, window_size, stride)
-                window_labels = np.array([label_idx] * len(windows), dtype=np.int32)
+                labels = tf.one_hot([label_idx] * len(windows), depth=len(LABEL_NAMES))
 
                 sample_fragments.append(windows)
-                label_fragments.append(window_labels)
+                label_fragments.append(labels)
 
     samples = tf.convert_to_tensor(np.concatenate(sample_fragments))
     labels = tf.convert_to_tensor(np.concatenate(label_fragments))
 
-    return tf.data.Dataset.from_tensor_slices((samples, labels))
+    return samples, labels
 
 
 def _extract_running_windows(
