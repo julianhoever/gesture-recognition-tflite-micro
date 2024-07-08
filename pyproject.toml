@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "gesture-recognition-tflite-rp2040"
+version = "0.1.0"
+description = ""
+authors = ["Julian Hoever <julianhoever@posteo.de>"]
+readme = "README.md"
+packages = [{ include = "ml_dev", from = "src" }]
+
+[tool.poetry.dependencies]
+python = "^3.12"
+tensorflow = "^2.16.2"
+matplotlib = "^3.9.1"
+numpy = "<2.0.0"
+cbor2 = "^5.6.4"
+
+
+[tool.poetry.group.dev.dependencies]
+mypy = "^1.10.1"
+black = "^24.4.2"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
