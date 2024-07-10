@@ -22,7 +22,7 @@ if (TARGET tinyusb_device)
     add_subdirectory(setup)
     ################################################################################
     # creates test_adxl345 executable
-    add_executable(test_adxl345 test_adxl345.c)
+    add_executable(test_adxl345 app/test_adxl345.c)
     target_include_directories(test_adxl345 PUBLIC .)
     # Pull in our pico_stdlib which aggregates commonly used features
     target_link_libraries(test_adxl345 pico_stdlib hardware_setup)
