@@ -14,12 +14,6 @@ int main(void)
         char c = getchar_timeout_us(10000);
         if (c == 't')
         {
-            printf("Testing the ADXL345 now\r\n");
-            printf("=====================================================\r\n");
-            printf("It first checks if ADXL345 is available.\r\n");
-            printf("It tries to read the acceleration data from the sensor.\r\n");
-            printf("=====================================================\r\n");
-
             if (NO_ERROR == setup_adxl345())
             {
                 adxl345_readData(&xAccl, &yAccl, &zAccl);
