@@ -13,6 +13,6 @@ target_link_libraries(hardware_setup INTERFACE
 	hardware_dma 
 	pico_stdlib 
 	hardware_i2c 
-	sensor_lib
+	sensors
 )
 

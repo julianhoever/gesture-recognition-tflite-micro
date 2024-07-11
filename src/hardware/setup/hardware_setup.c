@@ -2,7 +2,7 @@
 #include "hardware/adc.h"
 #include "hardware/i2c.h"
 #include "pico/stdlib.h"
-#include "sensor_lib/adxl345.h"
+#include "sensors/adxl345.h"
 
 /* region setup i2c0 */
 void setup_i2c0_sda_line(void) {
