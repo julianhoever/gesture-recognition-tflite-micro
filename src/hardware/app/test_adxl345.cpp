@@ -1,6 +1,6 @@
 #include "hardware_setup.h"
 #include "pico/stdlib.h"
-#include "sensors/adxl345.h"
+#include "adxl345.h"
 #include <stdio.h>
 
 int main(void)

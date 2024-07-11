@@ -17,9 +17,9 @@ if (TARGET tinyusb_device)
 
     add_subdirectory(sensors)
     add_subdirectory(setup)
-    add_subdirectory(pico-tflmicro)
+    # add_subdirectory(pico-tflmicro)
 
-    add_executable(test_adxl345 app/test_adxl345.c)
+    add_executable(test_adxl345 app/test_adxl345.cpp)
     target_include_directories(test_adxl345 PUBLIC .)
     target_link_libraries(test_adxl345 pico_stdlib hardware_setup sensors)
 

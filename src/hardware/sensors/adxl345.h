@@ -4,6 +4,11 @@
 
 #ifndef MY_PROJECT_ADXL345_H
 #define MY_PROJECT_ADXL345_H
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "pico/stdlib.h"
 #include "hardware/i2c.h"
 
@@ -40,4 +45,7 @@ int adxl345_init(i2c_inst_t *i2c);
  */
 void adxl345_readData(int16_t *xAccl, int16_t *yAccl, int16_t *zAccl);
 
+#ifdef __cplusplus
+}
+#endif
 #endif //MY_PROJECT_ADXL345_H

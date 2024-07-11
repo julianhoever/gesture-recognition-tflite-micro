@@ -1,6 +1,10 @@
 #ifndef HARDWARE_SETUP_H
 #define HARDWARE_SETUP_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stdint.h>
 #include <stdio.h>
 
@@ -46,5 +50,9 @@ float adc_measure_voltage(void);
 void adc_print_audio_record();
 
 /* endregion setup sensors */
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* HARDWARE_SETUP_H */
