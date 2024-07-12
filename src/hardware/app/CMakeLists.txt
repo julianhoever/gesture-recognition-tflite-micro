@@ -12,6 +12,7 @@ target_link_libraries(gesture_app
     pico_stdlib
     hardware_setup
     sensors
+    pico-tflmicro
 )
 
 pico_enable_stdio_usb(gesture_app 1)
