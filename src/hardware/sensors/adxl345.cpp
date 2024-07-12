@@ -1,21 +1,9 @@
-//
-// Created by chao on 12/09/2021.
-//
-
 #include "adxl345.h"
-#include <stdio.h>
 
 #define ADXL345_SLAVE_ADDR 0x53 // when ALT is connected to GND
 
 static i2c_inst_t *I2C_CH_ADXL345;
 
-/*! \brief  Check if the ADXL345 is on the I2C Bus
- *
- * \param none
- *
- * \returns -1: sensor is offline
- *          else: sensor on line
- */
 int adxl345_on_bus(void)
 {
     int ret;
@@ -24,13 +12,6 @@ int adxl345_on_bus(void)
     return ret;
 }
 
-/*! \brief ADXL345 initialization
- *
- * \param i2c: could only be i2c0 or i2c1
- *
- * \returns -1: sensor is offline
- *          else: sensor is initialized
- */
 int adxl345_init(i2c_inst_t *i2c)
 {
     uint8_t cmdbuffer[2];
@@ -63,15 +44,6 @@ int adxl345_init(i2c_inst_t *i2c)
     return 1;
 }
 
-/*! \brief Read the accelerate data from the sensor
- *
- * \param *xAccl: to return acceleration in X-Axis
- * \param *yAccl: to return acceleration in Y-Axis
- * \param *zAccl: to return acceleration in Z-Axis
- *
- * \returns -1: sensor error
- *          else: valid data
- */
 void adxl345_readData(int16_t *xAccl, int16_t *yAccl, int16_t *zAccl)
 {
     uint8_t readbuffer[6];

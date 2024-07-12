@@ -1,7 +1,7 @@
 add_library(hardware_setup INTERFACE)
 
 target_sources(hardware_setup INTERFACE
-	${CMAKE_CURRENT_LIST_DIR}/hardware_setup.c
+	${CMAKE_CURRENT_LIST_DIR}/hardware_setup.cpp
 )
 
 target_include_directories(hardware_setup INTERFACE
