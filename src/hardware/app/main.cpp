@@ -1,7 +1,7 @@
-#include "hardware_setup.h"
+#include <iostream>
 #include "pico/stdlib.h"
+#include "hardware_setup.h"
 #include "adxl345.h"
-#include <stdio.h>
 
 int main(void)
 {
@@ -17,7 +17,11 @@ int main(void)
             if (NO_ERROR == setup_adxl345())
             {
                 adxl345_readData(&xAccl, &yAccl, &zAccl);
-                printf("acc_x: %d, acc_y:%d, acc_z:%d\r\n", xAccl, yAccl, zAccl);
+                
+                std::cout << "acc_x: " << xAccl;
+                std::cout << "acc_y: " << yAccl;
+                std::cout << "acc_z: " << zAccl;
+                std::cout << std::endl;
             }
         }
     }
