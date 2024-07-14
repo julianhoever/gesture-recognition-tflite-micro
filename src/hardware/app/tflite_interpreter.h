@@ -1,5 +1,6 @@
 #include <cstdint>
 #include "tensorflow/lite/schema/schema_generated.h"
+#include "tensorflow/lite/micro/micro_interpreter.h"
 
 
 class TFLiteInterpreter {
