@@ -1,28 +1,57 @@
-#include <iostream>
+#include <cstdint>
+
 #include "pico/stdlib.h"
-#include "hardware_setup.h"
-#include "adxl345.h"
+#include "pico/stdio.h"
+#include "tensorflow/lite/micro/micro_mutable_op_resolver.h"
+#include "tflite_interpreter.h"
+#include "model.h"
 
-int main(void)
-{
-    int16_t xAccl, yAccl, zAccl;
+const uint32_t NUM_INPUTS = 125 * 3;
+const uint32_t NUM_OUTPUTS = 4;
+const uint32_t TENSOR_ARENA_SIZE = 10240;
 
-    initializePeripherals();
 
-    while (1)
-    {
-        char c = getchar_timeout_us(10000);
-        if (c == 't')
-        {
-            if (NO_ERROR == setup_adxl345())
-            {
-                adxl345_readData(&xAccl, &yAccl, &zAccl);
-                
-                std::cout << "acc_x: " << xAccl;
-                std::cout << "acc_y: " << yAccl;
-                std::cout << "acc_z: " << zAccl;
-                std::cout << std::endl;
-            }
-        }
-    }
+TFLiteInterpreter setupInterpreter() {
+    tflite::MicroMutableOpResolver<10> resolver;
+    resolver.AddQuantize();
+    resolver.AddExpandDims();
+    resolver.AddConv2D();
+    resolver.AddReshape();
+    resolver.AddAdd();
+    resolver.AddRelu();
+    resolver.AddMaxPool2D();
+    resolver.AddMul();
+    resolver.AddFullyConnected();
+    resolver.AddSoftmax();
+    
+    TFLiteInterpreter interpreter(
+        outputs_model_tflite, &resolver, TENSOR_ARENA_SIZE, NUM_INPUTS, NUM_OUTPUTS
+    );
+    interpreter.initialize();
+
+    return interpreter;
+}
+
+
+int main() {
+    stdio_init_all();
+
+    while(getchar() != 'r') {}
+
+    printf("### INITIALIZING BUFFERS ###\n");
+
+    float inputBuffer[NUM_INPUTS] = {0};
+    float outputBuffer[NUM_OUTPUTS] = {0};
+
+    printf("### INITIALIZING INTERPRETER ###\n");
+
+    TFLiteInterpreter interpreter = setupInterpreter();
+    
+    printf("### RUN INFERENCE ###\n");
+
+    interpreter.runInference(inputBuffer, outputBuffer);
+    
+    printf("### DONE ###\n");
+    
+    return 0;
 }
