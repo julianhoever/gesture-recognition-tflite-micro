@@ -1,7 +1,7 @@
 #ifndef TFLITE_INTERPRETER_H
 #define TFLITE_INTERPRETER_H
 
-#include <stdint.h>
+#include <cstdint>
 
 #include "tensorflow/lite/micro/micro_interpreter.h"
 #include "tensorflow/lite/micro/micro_mutable_op_resolver.h"
