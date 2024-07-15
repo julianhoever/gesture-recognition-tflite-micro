@@ -6,17 +6,18 @@
 #include "tflite_interpreter.h"
 #include "model.h"
 
-const uint32_t TENSOR_ARENA_SIZE = 1024 * 100;
+const uint32_t TENSOR_ARENA_SIZE = 1024 * 150;
 
 
 TFLiteInterpreter setupInterpreter() {
-    tflite::MicroMutableOpResolver<10> resolver;
+    tflite::MicroMutableOpResolver<11> resolver;
     resolver.AddQuantize();
     resolver.AddExpandDims();
-    resolver.AddConv2D();
+    resolver.AddDepthwiseConv2D();
     resolver.AddReshape();
     resolver.AddAdd();
     resolver.AddRelu();
+    resolver.AddConv2D();
     resolver.AddMaxPool2D();
     resolver.AddMul();
     resolver.AddFullyConnected();
@@ -37,8 +38,8 @@ int main() {
 
     printf("### INITIALIZING BUFFERS ###\n");
 
-    float inputBuffer[375] = {0};
-    float outputBuffer[4] = {0};
+    float inputBuffer[375] = {0.0f};
+    float outputBuffer[4] = {0.0f};
 
     printf("### INITIALIZING INTERPRETER ###\n");
 
