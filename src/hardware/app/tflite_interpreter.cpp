@@ -63,14 +63,10 @@ int TfLiteInterpreter::runInference(float* const inputBuffer, float* const outpu
         return -1;
     }
 
-    printf("Quantize inputs\n");
-
     for (uint32_t inputIdx = 0; inputIdx < this->inputFeatureCount; inputIdx++) {
         const float x = inputBuffer[inputIdx];
         this->input->data.uint8[inputIdx] = quantize(x);
     }
-
-    printf("Invoke interpreter\n");
 
     TfLiteStatus invokeStatus = this->interpreter->Invoke();
     if (invokeStatus != kTfLiteOk) {
@@ -78,14 +74,10 @@ int TfLiteInterpreter::runInference(float* const inputBuffer, float* const outpu
         return -2;
     }
 
-    printf("Dequantize outputs\n");
-
     for (uint32_t outputIdx = 0; outputIdx < this->outputFeatureCount; outputIdx++) {
         const uint8_t quant_y = this->output->data.uint8[outputIdx];
         outputBuffer[outputIdx] = dequantize(quant_y);
     }
-
-    printf("Done\n");
 
     return 0;
 }
