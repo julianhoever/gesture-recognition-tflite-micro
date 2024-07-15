@@ -1,5 +1,4 @@
 from functools import partial
-from pathlib import Path
 
 import keras
 import tensorflow as tf
@@ -8,14 +7,14 @@ import matplotlib.pyplot as plt
 from ml_dev.gesture_dataset import load_gesture_data
 from ml_dev.preprocessing import normalize
 from ml_dev.gesture_cnn_model import gesture_cnn_model
-from ml_dev.environment import DATA_ROOT, OUTPUTS_DIR, KERAS_MODEL_FILE
+from ml_dev.environment import DATA_ROOT, OUTPUTS_DIR, MODEL_WEIGHTS_FILE, SAMPLE_SHAPE
 
 
 def main() -> None:
     OUTPUTS_DIR.mkdir(exist_ok=True)
 
     (x_train, y_train), (x_val, y_val) = _load_data()
-    model = gesture_cnn_model((None, 125, 3))
+    model = gesture_cnn_model((None, *SAMPLE_SHAPE))
     model.summary()
 
     model.compile(
@@ -32,13 +31,14 @@ def main() -> None:
         shuffle=True,
         callbacks=[
             keras.callbacks.ModelCheckpoint(
-                filepath=KERAS_MODEL_FILE,
+                filepath=MODEL_WEIGHTS_FILE,
                 monitor="val_categorical_accuracy",
                 save_best_only=True,
+                save_weights_only=True,
             )
         ],
     )
-    model.load_weights(KERAS_MODEL_FILE)
+    model.load_weights(MODEL_WEIGHTS_FILE)
     model.evaluate(x=x_val, y=y_val)
 
     _plot_train_history(history)
@@ -46,7 +46,7 @@ def main() -> None:
 
 def _load_data() -> tuple[tuple[tf.Tensor, tf.Tensor], tuple[tf.Tensor, tf.Tensor]]:
     load_data = partial(
-        load_gesture_data, data_root=DATA_ROOT, window_size=125, stride=1
+        load_gesture_data, data_root=DATA_ROOT, window_size=SAMPLE_SHAPE[0], stride=1
     )
     x_train, y_train = load_data(training=True)
     x_val, y_val = load_data(training=False)

@@ -1,17 +1,23 @@
-import keras
+from functools import partial
+
 import tensorflow as tf
 
+from ml_dev.gesture_cnn_model import gesture_cnn_model
 from ml_dev.gesture_dataset import load_gesture_data
 from ml_dev.preprocessing import normalize
-from ml_dev.environment import DATA_ROOT, KERAS_MODEL_FILE
+from ml_dev.environment import DATA_ROOT, MODEL_WEIGHTS_FILE, SAMPLE_SHAPE
 
 
 def main() -> None:
-    x_train, y_train = load_gesture_data(DATA_ROOT, training=True)
-    x_val, y_val = load_gesture_data(DATA_ROOT, training=False)
+    load_data = partial(
+        load_gesture_data, data_root=DATA_ROOT, window_size=SAMPLE_SHAPE[0]
+    )
+    x_train, y_train = load_data(training=True)
+    x_val, y_val = load_data(training=False)
     x_train, x_val = normalize(x_train), normalize(x_val)
 
-    model = keras.saving.load_model(KERAS_MODEL_FILE)
+    model = gesture_cnn_model((None, *SAMPLE_SHAPE))
+    model.load_weights(MODEL_WEIGHTS_FILE)
 
     pred_train = model.predict(x_train)
     pred_val = model.predict(x_val)
