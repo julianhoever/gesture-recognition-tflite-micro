@@ -21,9 +21,8 @@
  * Title:        arm_nnfunctions.h
  * Description:  Public header file for CMSIS NN Library
  *
- * $Date:        13 February 2024
- * $Revision:    V.13.0.1
-
+ * $Date:        23 April 2024
+ * $Revision:    V.16.0.0
  *
  * Target :  Arm(R) M-Profile Architecture
  * -------------------------------------------------------------------- */
@@ -250,7 +249,8 @@ int32_t arm_convolve_wrapper_s8_get_buffer_size_dsp(const cmsis_nn_conv_params *
  *                                spatial filter dimensions
  * @param[in]      filter_data    Filter data pointer. Data type: int8
  * @param[in]      bias_dims      Bias tensor dimensions. Format: [C_OUT]
- * @param[in]      bias_data      Bias data pointer. Data type: int64
+ * @param[in]      bias_data      Struct with optional bias data pointer. Bias data type can be int64 or int32 depending
+ *                                flag in struct.
  * @param[in]      output_dims    Output tensor dimensions. Format: [N, H, W, C_OUT]
  * @param[out]     output_data    Output data pointer. Data type: int16
  *
@@ -267,7 +267,7 @@ arm_cmsis_nn_status arm_convolve_wrapper_s16(const cmsis_nn_context *ctx,
                                              const cmsis_nn_dims *filter_dims,
                                              const int8_t *filter_data,
                                              const cmsis_nn_dims *bias_dims,
-                                             const int64_t *bias_data,
+                                             const cmsis_nn_bias_data *bias_data,
                                              const cmsis_nn_dims *output_dims,
                                              int16_t *output_data);
 
@@ -375,8 +375,10 @@ arm_cmsis_nn_status arm_convolve_s4(const cmsis_nn_context *ctx,
  * @param[in]      bias_data      Optional bias data pointer. Data type: int32
  * @param[in]      output_dims    Output tensor dimensions. Format: [N, H, W, C_OUT]
  * @param[out]     output_data    Output data pointer. Data type: int8
-
- * @return     The function returns <code>ARM_CMSIS_NN_SUCCESS</code>
+ *
+ * @return     The function returns <code>ARM_CMSIS_NN_SUCCESS</code> if successful or
+ *                                  <code>ARM_CMSIS_NN_ARG_ERROR</code> if incorrect arguments or
+ *                                  <code>ARM_CMSIS_NN_NO_IMPL_ERROR</code>
  *
  * @details
  *    1. Supported framework: TensorFlow Lite micro
@@ -519,11 +521,14 @@ int32_t arm_transpose_conv_s8_get_buffer_size_mve(const cmsis_nn_dims *input_dim
  *                                spatial filter dimensions
  * @param[in]      filter_data    Filter data pointer. Data type: int8
  * @param[in]      bias_dims      Bias tensor dimensions. Format: [C_OUT]
- * @param[in]      bias_data      Optional bias data pointer. Data type: int64
+ * @param[in]      bias_data      Struct with optional bias data pointer. Bias data type can be int64 or int32 depending
+ *                                flag in struct.
  * @param[in]      output_dims    Output tensor dimensions. Format: [N, H, W, C_OUT]
  * @param[out]     output_data    Output data pointer. Data type: int16
-
- * @return     The function returns <code>ARM_CMSIS_NN_SUCCESS</code>
+ *
+ * @return     The function returns <code>ARM_CMSIS_NN_SUCCESS</code> if successful or
+ *                                  <code>ARM_CMSIS_NN_ARG_ERROR</code> if incorrect arguments or
+ *                                  <code>ARM_CMSIS_NN_NO_IMPL_ERROR</code>
  *
  * @details
  *    1. Supported framework: TensorFlow Lite micro
@@ -538,50 +543,9 @@ arm_cmsis_nn_status arm_convolve_s16(const cmsis_nn_context *ctx,
                                      const cmsis_nn_dims *filter_dims,
                                      const int8_t *filter_data,
                                      const cmsis_nn_dims *bias_dims,
-                                     const int64_t *bias_data,
+                                     const cmsis_nn_bias_data *bias_data,
                                      const cmsis_nn_dims *output_dims,
                                      int16_t *output_data);
-/**
- * @brief Optimized s16 convolution function
- * @param[in, out] ctx            Function context that contains the additional buffer if required by the function.
- *                                arm_convolve_fast_s16_get_buffer_size will return the buffer_size if required.
- *                                The caller is expected to clear the buffer, if applicable, for security reasons.
- * @param[in]      conv_params    Convolution parameters (e.g. strides, dilations, pads,...).
- *                                conv_params->input_offset  : Not used
- *                                conv_params->output_offset : Not used
- * @param[in]      quant_params   Per-channel quantization info.
- *                                It contains the multiplier and shift values to be applied to each output channel
- * @param[in]      input_dims     Input (activation) tensor dimensions. Format: [N, H, W, C_IN]
- * @param[in]      input_data     Input (activation) data pointer. Data type: int16
- * @param[in]      filter_dims    Filter tensor dimensions. Format: [C_OUT, HK, WK, C_IN] where HK and WK are the
- *                                spatial filter dimensions. (filter_dims->w * filter_dims->h * input_dims->c) must not
- exceed 512
- * @param[in]      filter_data    Filter data pointer. Data type: int8
- * @param[in]      bias_dims      Bias tensor dimensions. Format: [C_OUT]
- * @param[in]      bias_data      Optional bias data pointer. Data type: int64
- * @param[in]      output_dims    Output tensor dimensions. Format: [N, H, W, C_OUT]
- * @param[out]     output_data    Output data pointer. Data type: int16
-
- * @return     The function returns <code>ARM_CMSIS_NN_SUCCESS</code>
- *
- * @details
- *    1. Supported framework: TensorFlow Lite micro
- *    2. Additional memory is required for optimization. Refer to argument 'ctx' for details.
- *    3. Implementation supports kernel volumes (filter width * filter height * input channels) < 512.
- *
- */
-
-arm_cmsis_nn_status arm_convolve_fast_s16(const cmsis_nn_context *ctx,
-                                          const cmsis_nn_conv_params *conv_params,
-                                          const cmsis_nn_per_channel_quant_params *quant_params,
-                                          const cmsis_nn_dims *input_dims,
-                                          const int16_t *input_data,
-                                          const cmsis_nn_dims *filter_dims,
-                                          const int8_t *filter_data,
-                                          const cmsis_nn_dims *bias_dims,
-                                          const int64_t *bias_data,
-                                          const cmsis_nn_dims *output_dims,
-                                          int16_t *output_data);
 
 /**
  * @brief Get the required buffer size for s16 convolution function
@@ -593,17 +557,6 @@ arm_cmsis_nn_status arm_convolve_fast_s16(const cmsis_nn_context *ctx,
  *
  */
 int32_t arm_convolve_s16_get_buffer_size(const cmsis_nn_dims *input_dims, const cmsis_nn_dims *filter_dims);
-
-/**
- * @brief Get the required buffer size for fast s16 convolution function
- *
- * @param[in]       input_dims    Input (activation) tensor dimensions. Format: [N, H, W, C_IN]
- * @param[in]       filter_dims   Filter tensor dimensions. Format: [C_OUT, HK, WK, C_IN] where HK and WK
- *                                are the spatial filter dimensions
- * @return          The function returns required buffer size(bytes)
- *
- */
-int32_t arm_convolve_fast_s16_get_buffer_size(const cmsis_nn_dims *input_dims, const cmsis_nn_dims *filter_dims);
 
 /**
  * @brief Fast s4 version for 1x1 convolution (non-square shape)
@@ -839,15 +792,90 @@ arm_cmsis_nn_status arm_convolve_1_x_n_s8(const cmsis_nn_context *ctx,
                                           int8_t *output_data);
 
 /**
+ * @brief 1xn convolution for s4 weights
+ *
+ * @param[in, out] ctx           Function context that contains the additional buffer if required by the function.
+ *                               arm_convolve_1_x_n_s4_get_buffer_size will return the buffer_size if required
+ *                               The caller is expected to clear the buffer, if applicable, for security reasons.
+ * @param[in]      conv_params   Convolution parameters (e.g. strides, dilations, pads,...).
+ *                               Range of conv_params->input_offset  : [-127, 128]
+ *                               Range of conv_params->output_offset : [-128, 127]
+ * @param[in]      quant_params  Per-channel quantization info.
+ *                               It contains the multiplier and shift values to be applied to each output channel
+ * @param[in]      input_dims    Input (activation) tensor dimensions. Format: [N, H, W, C_IN]
+ * @param[in]      input_data    Input (activation) data pointer. Data type: int8
+ * @param[in]      filter_dims   Filter tensor dimensions. Format: [C_OUT, 1, WK, C_IN] where WK is the horizontal
+ *                               spatial filter dimension
+ * @param[in]      filter_data   Filter data pointer. Data type: int8 as packed int4
+ * @param[in]      bias_dims     Bias tensor dimensions. Format: [C_OUT]
+ * @param[in]      bias_data     Optional bias data pointer. Data type: int32
+ * @param[in]      output_dims   Output tensor dimensions. Format: [N, H, W, C_OUT]
+ * @param[out]     output_data   Output data pointer. Data type: int8
+ *
+ * @return     The function returns either
+ *                  <code>ARM_CMSIS_NN_ARG_ERROR</code> if argument constraints fail. or,
+ *                  <code>ARM_CMSIS_NN_SUCCESS</code> on successful completion.
+ *
+ * @details
+ *   - Supported framework : TensorFlow Lite Micro
+ *   - The following constrains on the arguments apply
+ *      -# stride.w * input_dims->c is a multiple of 4
+ *      -# Explicit constraints(since it is for 1xN convolution)
+ *      -## input_dims->h equals 1
+ *      -## output_dims->h equals 1
+ *      -## filter_dims->h equals 1
+ *@todo  Remove constraint on output_dims->w to make the function generic.
+ *
+ */
+arm_cmsis_nn_status arm_convolve_1_x_n_s4(const cmsis_nn_context *ctx,
+                                          const cmsis_nn_conv_params *conv_params,
+                                          const cmsis_nn_per_channel_quant_params *quant_params,
+                                          const cmsis_nn_dims *input_dims,
+                                          const int8_t *input_data,
+                                          const cmsis_nn_dims *filter_dims,
+                                          const int8_t *filter_data,
+                                          const cmsis_nn_dims *bias_dims,
+                                          const int32_t *bias_data,
+                                          const cmsis_nn_dims *output_dims,
+                                          int8_t *output_data);
+
+/**
  * @brief Get the required additional buffer size for 1xn convolution
  *
+ * @param[in]       conv_params           Convolution parameters (e.g. strides, dilations, pads,...).
+ *                                        Range of conv_params->input_offset  : [-127, 128]
+ *                                        Range of conv_params->output_offset : [-128, 127]
  * @param[in]       input_dims            Input (activation) tensor dimensions. Format: [N, H, W, C_IN]
  * @param[in]       filter_dims           Filter tensor dimensions. Format: [C_OUT, 1, WK, C_IN] where WK is the
  *                                        horizontal spatial filter dimension
+ * @param[in]       output_dims           Output tensor dimensions. Format: [N, H, W, C_OUT]
+ *
  * @return          The function returns required buffer size(bytes)
  *
  */
-int32_t arm_convolve_1_x_n_s8_get_buffer_size(const cmsis_nn_dims *input_dims, const cmsis_nn_dims *filter_dims);
+int32_t arm_convolve_1_x_n_s8_get_buffer_size(const cmsis_nn_conv_params *conv_params,
+                                              const cmsis_nn_dims *input_dims,
+                                              const cmsis_nn_dims *filter_dims,
+                                              const cmsis_nn_dims *output_dims);
+
+/**
+ * @brief Get the required additional buffer size for 1xn convolution
+ *
+ * @param[in]       conv_params           Convolution parameters (e.g. strides, dilations, pads,...).
+ *                                        Range of conv_params->input_offset  : [-127, 128]
+ *                                        Range of conv_params->output_offset : [-128, 127]
+ * @param[in]       input_dims            Input (activation) tensor dimensions. Format: [N, H, W, C_IN]
+ * @param[in]       filter_dims           Filter tensor dimensions. Format: [C_OUT, 1, WK, C_IN] where WK is the
+ *                                        horizontal spatial filter dimension
+ * @param[in]       output_dims           Output tensor dimensions. Format: [N, H, W, C_OUT]
+ *
+ * @return          The function returns required buffer size(bytes)
+ *
+ */
+int32_t arm_convolve_1_x_n_s4_get_buffer_size(const cmsis_nn_conv_params *conv_params,
+                                              const cmsis_nn_dims *input_dims,
+                                              const cmsis_nn_dims *filter_dims,
+                                              const cmsis_nn_dims *output_dims);
 
 /**
  * @brief Wrapper function to pick the right optimized s8 depthwise convolution function
@@ -1515,7 +1543,7 @@ arm_cmsis_nn_status arm_fully_connected_s8(const cmsis_nn_context *ctx,
                                            int8_t *output_data);
 
 /**
- * @brief Calculate the sum of each row in vector_data, multiply by lhs_offset and optionally add bias_data.
+ * @brief Calculate the sum of each row in vector_data, multiply by lhs_offset and optionally add s32 bias_data.
  * @param[in, out]      vector_sum_buf              Buffer for vector sums
  * @param[in]           vector_cols                 Number of vector columns
  * @param[in]           vector_rows                 Number of vector rows
@@ -1531,6 +1559,24 @@ arm_cmsis_nn_status arm_vector_sum_s8(int32_t *vector_sum_buf,
                                       const int8_t *vector_data,
                                       const int32_t lhs_offset,
                                       const int32_t *bias_data);
+
+/**
+ * @brief Calculate the sum of each row in vector_data, multiply by lhs_offset and optionally add s64 bias_data.
+ * @param[in, out]      vector_sum_buf              Buffer for vector sums
+ * @param[in]           vector_cols                 Number of vector columns
+ * @param[in]           vector_rows                 Number of vector rows
+ * @param[in]           vector_data                 Vector of weigths data
+ * @param[in]           lhs_offset                  Constant multiplied with each sum
+ * @param[in]           bias_data                   Vector of bias data, added to each sum.
+ * @return              The function returns
+ *                         <code>ARM_CMSIS_NN_SUCCESS</code> - Successful operation
+ */
+arm_cmsis_nn_status arm_vector_sum_s8_s64(int64_t *vector_sum_buf,
+                                          const int32_t vector_cols,
+                                          const int32_t vector_rows,
+                                          const int8_t *vector_data,
+                                          const int32_t lhs_offset,
+                                          const int64_t *bias_data);
 
 /**
  * @brief Get size of additional buffer required by arm_fully_connected_s8().
@@ -2442,32 +2488,6 @@ arm_cmsis_nn_status arm_svdf_state_s16_s8(const cmsis_nn_context *input_ctx,
                                           int8_t *output_data);
 
 /**
- * @defgroup LSTM LSTM Layer Functions
- *
- */
-
-/**
- * @brief LSTM unidirectional function with 8 bit input and output and 16 bit gate output.
- *
- * @param[in]   input                      Pointer to input data
- * @param[out]  output                     Pointer to output data
- * @param[in]   params                     Struct containing all information about the lstm operator, see arm_nn_types.
- * @param[in]   buffers                    Struct containing pointers to all temporary scratch buffers needed for the
- * lstm operator, see arm_nn_types.
- *
- *
- * @return     The function returns <code>ARM_CMSIS_NN_SUCCESS</code>
- *
- * @details
- *    1. Supported framework: TensorFlow Lite Micro
- *
- */
-arm_cmsis_nn_status arm_lstm_unidirectional_s8(const int8_t *input,
-                                               int8_t *output,
-                                               const cmsis_nn_lstm_params *params,
-                                               cmsis_nn_lstm_context *buffers);
-
-/**
  * @brief Get size of additional buffer required by arm_svdf_s8().
  * @param[in]      filter_dims             dimension of filter
  * @return         The function returns    required buffer size in bytes
@@ -2494,6 +2514,53 @@ int32_t arm_svdf_s8_get_buffer_size_dsp(const cmsis_nn_dims *filter_dims);
  *
  */
 int32_t arm_svdf_s8_get_buffer_size_mve(const cmsis_nn_dims *filter_dims);
+
+/**
+ * @defgroup LSTM LSTM Layer Functions
+ *
+ */
+
+/**
+ * @brief LSTM unidirectional function with 8 bit input and output and 16 bit gate output, 32 bit bias.
+ *
+ * @param[in]   input                      Pointer to input data
+ * @param[out]  output                     Pointer to output data
+ * @param[in]   params                     Struct containing all information about the lstm operator, see arm_nn_types.
+ * @param[in]   buffers                    Struct containing pointers to all temporary scratch buffers needed for the
+ * lstm operator, see arm_nn_types.
+ *
+ *
+ * @return     The function returns <code>ARM_CMSIS_NN_SUCCESS</code>
+ *
+ * @details
+ *    1. Supported framework: TensorFlow Lite Micro
+ *
+ */
+arm_cmsis_nn_status arm_lstm_unidirectional_s8(const int8_t *input,
+                                               int8_t *output,
+                                               const cmsis_nn_lstm_params *params,
+                                               cmsis_nn_lstm_context *buffers);
+
+/**
+ * @brief LSTM unidirectional function with 16 bit input and output and 16 bit gate output, 64 bit bias.
+ *
+ * @param[in]   input                      Pointer to input data
+ * @param[out]  output                     Pointer to output data
+ * @param[in]   params                     Struct containing all information about the lstm operator, see arm_nn_types.
+ * @param[in]   buffers                    Struct containing pointers to all temporary scratch buffers needed for the
+ * lstm operator, see arm_nn_types.
+ *
+ *
+ * @return     The function returns <code>ARM_CMSIS_NN_SUCCESS</code>
+ *
+ * @details
+ *    1. Supported framework: TensorFlow Lite Micro
+ *
+ */
+arm_cmsis_nn_status arm_lstm_unidirectional_s16(const int16_t *input,
+                                                int16_t *output,
+                                                const cmsis_nn_lstm_params *params,
+                                                cmsis_nn_lstm_context *buffers);
 
 #ifdef __cplusplus
 }
