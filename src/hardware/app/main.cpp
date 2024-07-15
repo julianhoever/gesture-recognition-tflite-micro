@@ -1,12 +1,16 @@
-#include <stdio.h>
-#include <stdint.h>
+#include <cstdio>
+#include <cstdint>
 
 #include "pico/stdio.h"
-
 #include "tensorflow/lite/micro/micro_mutable_op_resolver.h"
+
+#include "preprocessing_functions.h"
 #include "tflite_interpreter.h"
 #include "model.h"
 
+
+const uint32_t INPUT_FEATURE_COUNT = 125 * 3;
+const uint32_t OUTPUT_FEATURE_COUNT = 4;
 const uint32_t TENSOR_ARENA_SIZE = 1024 * 100;
 
 
@@ -35,16 +39,17 @@ int main() {
     stdio_init_all();
 
     while(getchar() != 'r') {}
-
-    printf("### INITIALIZING BUFFERS ###\n");
-    float inputBuffer[375] = {0.0f};
-    float outputBuffer[4] = {0.0f};
-
-    printf("### CREATE INTERPRETER ###\n");
+    
     TfLiteInterpreter interpreter = getInterpreter();
 
-    printf("### RUN INFERENCE ###\n");
+    float inputBuffer[INPUT_FEATURE_COUNT] = {0.0f};
+    float outputBuffer[OUTPUT_FEATURE_COUNT] = {0.0f};
+
+    normalize(inputBuffer, INPUT_FEATURE_COUNT);
+
     interpreter.runInference(inputBuffer, outputBuffer);
+
+    printf("Done\n");
 
     return 0;
 }
