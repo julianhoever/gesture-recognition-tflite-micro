@@ -6,9 +6,7 @@
 #include "tflite_interpreter.h"
 #include "model.h"
 
-const uint32_t NUM_INPUTS = 125 * 3;
-const uint32_t NUM_OUTPUTS = 4;
-const uint32_t TENSOR_ARENA_SIZE = 10240;
+const uint32_t TENSOR_ARENA_SIZE = 1024 * 100;
 
 
 TFLiteInterpreter setupInterpreter() {
@@ -25,8 +23,7 @@ TFLiteInterpreter setupInterpreter() {
     resolver.AddSoftmax();
     
     TFLiteInterpreter interpreter(
-        outputs_model_tflite, &resolver, TENSOR_ARENA_SIZE, NUM_INPUTS, NUM_OUTPUTS
-    );
+        model_tflite, &resolver, TENSOR_ARENA_SIZE);
     interpreter.initialize();
 
     return interpreter;
@@ -40,8 +37,8 @@ int main() {
 
     printf("### INITIALIZING BUFFERS ###\n");
 
-    float inputBuffer[NUM_INPUTS] = {0};
-    float outputBuffer[NUM_OUTPUTS] = {0};
+    float inputBuffer[375] = {0};
+    float outputBuffer[4] = {0};
 
     printf("### INITIALIZING INTERPRETER ###\n");
 

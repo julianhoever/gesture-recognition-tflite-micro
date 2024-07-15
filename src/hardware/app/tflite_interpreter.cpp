@@ -11,14 +11,10 @@
 TFLiteInterpreter::TFLiteInterpreter(
     const uint8_t* modelBuffer,
     const tflite::MicroOpResolver* resolver,
-    const uint32_t tensorArenaSize,
-    const uint32_t inputFeatureCount,
-    const uint32_t outputFeatureCount
+    const uint32_t tensorArenaSize
 ) : modelBuffer(modelBuffer),
     resolver(resolver),
     tensorArenaSize(tensorArenaSize),
-    inputFeatureCount(inputFeatureCount),
-    outputFeatureCount(outputFeatureCount),
     tensorArena(new uint8_t[tensorArenaSize] { 0 }) { }
 
 
@@ -30,8 +26,7 @@ int TFLiteInterpreter::initialize() {
         printf(
             "Model provided is schema version %d not equal "
             "to supported version %d.\n",
-            this->model->version(), TFLITE_SCHEMA_VERSION
-        );
+            this->model->version(), TFLITE_SCHEMA_VERSION);
         return -1;
     }
 
@@ -48,11 +43,30 @@ int TFLiteInterpreter::initialize() {
     this->input = interpreter->input(0);
     this->output = interpreter->output(0);
 
+    const TfLiteType inputType = this->input->type;
+    if (inputType != kTfLiteUInt8) {
+        printf("Expect uint8 input type. Actual: TfLiteType == %d\n", inputType);
+    }
+    const TfLiteType outputType = this->output->type;
+    if (outputType != kTfLiteUInt8) {
+        printf("Expect uint8 output type. Actual: TfLiteType == %d\n", outputType);
+    }
+
+    this->inputFeatureCount = this->input->bytes;
+    this->outputFeatureCount = this->output->bytes;
+
+    this->initialized = true;
+
     return 0;
 }
 
 
 int TFLiteInterpreter::runInference(float* const inputBuffer, float* const outputBuffer) {
+    if (!initialized) {
+        printf("Uninitialized interpeter");
+        return -1;
+    }
+
     printf("Quantize inputs\n");
     for (uint32_t inputIdx = 0; inputIdx < this->inputFeatureCount; inputIdx++) {
         const float x = inputBuffer[inputIdx];
