@@ -9,7 +9,7 @@
 const uint32_t TENSOR_ARENA_SIZE = 1024 * 150;
 
 
-TFLiteInterpreter setupInterpreter() {
+TFLiteInterpreter getInterpreter() {
     tflite::MicroMutableOpResolver<11> resolver;
     resolver.AddQuantize();
     resolver.AddExpandDims();
@@ -43,7 +43,7 @@ int main() {
 
     printf("### INITIALIZING INTERPRETER ###\n");
 
-    TFLiteInterpreter interpreter = setupInterpreter();
+    TFLiteInterpreter interpreter = getInterpreter();
     
     printf("### RUN INFERENCE ###\n");
 
