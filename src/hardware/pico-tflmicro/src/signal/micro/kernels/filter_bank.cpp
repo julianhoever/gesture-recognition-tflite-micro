@@ -46,8 +46,7 @@ struct TFLMSignalFilterBankParams {
   uint64_t* work_area;
 };
 
-void* FilterBankInit(TfLiteContext* context, const char* buffer,
-                     size_t length) {
+void* Init(TfLiteContext* context, const char* buffer, size_t length) {
   TFLITE_DCHECK(context->AllocatePersistentBuffer != nullptr);
 
   auto* params = static_cast<TFLMSignalFilterBankParams*>(
@@ -71,7 +70,7 @@ void* FilterBankInit(TfLiteContext* context, const char* buffer,
   return params;
 }
 
-TfLiteStatus FilterBankPrepare(TfLiteContext* context, TfLiteNode* node) {
+TfLiteStatus Prepare(TfLiteContext* context, TfLiteNode* node) {
   TF_LITE_ENSURE_EQ(context, NumInputs(node), 6);
   TF_LITE_ENSURE_EQ(context, NumOutputs(node), 1);
 
@@ -123,7 +122,7 @@ TfLiteStatus FilterBankPrepare(TfLiteContext* context, TfLiteNode* node) {
   return kTfLiteOk;
 }
 
-TfLiteStatus FilterBankEval(TfLiteContext* context, TfLiteNode* node) {
+TfLiteStatus Eval(TfLiteContext* context, TfLiteNode* node) {
   auto* params = reinterpret_cast<TFLMSignalFilterBankParams*>(node->user_data);
 
   const TfLiteEvalTensor* input0 =
@@ -167,8 +166,7 @@ TfLiteStatus FilterBankEval(TfLiteContext* context, TfLiteNode* node) {
 namespace tflm_signal {
 
 TFLMRegistration* Register_FILTER_BANK() {
-  static TFLMRegistration r = tflite::micro::RegisterOp(
-      FilterBankInit, FilterBankPrepare, FilterBankEval);
+  static TFLMRegistration r = tflite::micro::RegisterOp(Init, Prepare, Eval);
   return &r;
 }
 

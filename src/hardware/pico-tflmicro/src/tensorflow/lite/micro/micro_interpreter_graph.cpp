@@ -44,7 +44,6 @@ MicroInterpreterGraph::MicroInterpreterGraph(
       model_(model),
       allocator_(allocator),
       current_subgraph_index_(0),
-      current_operator_index_(0),
       resource_variables_(resource_variables) {
   if (model != nullptr) {
     subgraphs_ = model->subgraphs();
@@ -55,21 +54,17 @@ MicroInterpreterGraph::~MicroInterpreterGraph() {}
 
 TfLiteStatus MicroInterpreterGraph::InitSubgraphs() {
   int previous_subgraph_idx = current_subgraph_index_;
-  uint32_t previous_operator_idx = current_operator_index_;
 
   for (size_t subgraph_idx = 0; subgraph_idx < subgraphs_->size();
        subgraph_idx++) {
     current_subgraph_index_ = subgraph_idx;
     uint32_t operators_size = NumSubgraphOperators(model_, subgraph_idx);
-    for (current_operator_index_ = 0; current_operator_index_ < operators_size;
-         ++current_operator_index_) {
-      TfLiteNode* node = &(subgraph_allocations_[subgraph_idx]
-                               .node_and_registrations[current_operator_index_]
-                               .node);
-      const TFLMRegistration* registration =
-          subgraph_allocations_[subgraph_idx]
-              .node_and_registrations[current_operator_index_]
-              .registration;
+    for (size_t i = 0; i < operators_size; ++i) {
+      TfLiteNode* node =
+          &(subgraph_allocations_[subgraph_idx].node_and_registrations[i].node);
+      const TFLMRegistration* registration = subgraph_allocations_[subgraph_idx]
+                                                 .node_and_registrations[i]
+                                                 .registration;
       size_t init_data_size;
       const char* init_data;
       if (registration->builtin_code == BuiltinOperator_CUSTOM) {
@@ -86,62 +81,52 @@ TfLiteStatus MicroInterpreterGraph::InitSubgraphs() {
     }
   }
   current_subgraph_index_ = previous_subgraph_idx;
-  current_operator_index_ = previous_operator_idx;
 
   return kTfLiteOk;
 }
 
 TfLiteStatus MicroInterpreterGraph::PrepareSubgraphs() {
   int previous_subgraph_idx = current_subgraph_index_;
-  uint32_t previous_operator_idx = current_operator_index_;
+
   for (size_t subgraph_idx = 0; subgraph_idx < subgraphs_->size();
        subgraph_idx++) {
     current_subgraph_index_ = subgraph_idx;
     uint32_t operators_size = NumSubgraphOperators(model_, subgraph_idx);
-    for (current_operator_index_ = 0; current_operator_index_ < operators_size;
-         ++current_operator_index_) {
-      TfLiteNode* node = &(subgraph_allocations_[subgraph_idx]
-                               .node_and_registrations[current_operator_index_]
-                               .node);
-      const TFLMRegistration* registration =
-          subgraph_allocations_[subgraph_idx]
-              .node_and_registrations[current_operator_index_]
-              .registration;
+    for (size_t i = 0; i < operators_size; ++i) {
+      TfLiteNode* node =
+          &(subgraph_allocations_[subgraph_idx].node_and_registrations[i].node);
+      const TFLMRegistration* registration = subgraph_allocations_[subgraph_idx]
+                                                 .node_and_registrations[i]
+                                                 .registration;
       if (registration->prepare != nullptr) {
         TfLiteStatus prepare_status = registration->prepare(context_, node);
         if (prepare_status != kTfLiteOk) {
           MicroPrintf("Node %s (number %df) failed to prepare with status %d",
-                      OpNameFromRegistration(registration),
-                      current_operator_index_, prepare_status);
+                      OpNameFromRegistration(registration), i, prepare_status);
           return kTfLiteError;
         }
       }
-      allocator_->FinishPrepareNodeAllocations(
-          /*node_id=*/current_operator_index_);
+      allocator_->FinishPrepareNodeAllocations(/*node_id=*/i);
     }
   }
   current_subgraph_index_ = previous_subgraph_idx;
-  current_operator_index_ = previous_operator_idx;
+
   return kTfLiteOk;
 }
 
 TfLiteStatus MicroInterpreterGraph::ResetSubgraphs() {
   int previous_subgraph_idx = current_subgraph_index_;
-  uint32_t previous_operator_idx = current_operator_index_;
 
   for (size_t subgraph_idx = 0; subgraph_idx < subgraphs_->size();
        subgraph_idx++) {
     current_subgraph_index_ = subgraph_idx;
     uint32_t operators_size = NumSubgraphOperators(model_, subgraph_idx);
-    for (current_operator_index_ = 0; current_operator_index_ < operators_size;
-         ++current_operator_index_) {
-      TfLiteNode* node = &(subgraph_allocations_[subgraph_idx]
-                               .node_and_registrations[current_operator_index_]
-                               .node);
-      const TFLMRegistration* registration =
-          subgraph_allocations_[subgraph_idx]
-              .node_and_registrations[current_operator_index_]
-              .registration;
+    for (size_t i = 0; i < operators_size; ++i) {
+      TfLiteNode* node =
+          &(subgraph_allocations_[subgraph_idx].node_and_registrations[i].node);
+      const TFLMRegistration* registration = subgraph_allocations_[subgraph_idx]
+                                                 .node_and_registrations[i]
+                                                 .registration;
       // registration is allocated outside the interpreter, so double check to
       // make sure it's not nullptr;
       if (registration != nullptr && registration->reset != nullptr) {
@@ -150,28 +135,23 @@ TfLiteStatus MicroInterpreterGraph::ResetSubgraphs() {
     }
   }
   current_subgraph_index_ = previous_subgraph_idx;
-  current_operator_index_ = previous_operator_idx;
 
   return kTfLiteOk;
 }
 
 TfLiteStatus MicroInterpreterGraph::FreeSubgraphs() {
   int previous_subgraph_idx = current_subgraph_index_;
-  uint32_t previous_operator_idx = current_operator_index_;
 
   for (size_t subgraph_idx = 0; subgraph_idx < subgraphs_->size();
        subgraph_idx++) {
     current_subgraph_index_ = subgraph_idx;
     uint32_t operators_size = NumSubgraphOperators(model_, subgraph_idx);
-    for (current_operator_index_ = 0; current_operator_index_ < operators_size;
-         ++current_operator_index_) {
-      TfLiteNode* node = &(subgraph_allocations_[subgraph_idx]
-                               .node_and_registrations[current_operator_index_]
-                               .node);
-      const TFLMRegistration* registration =
-          subgraph_allocations_[subgraph_idx]
-              .node_and_registrations[current_operator_index_]
-              .registration;
+    for (size_t i = 0; i < operators_size; ++i) {
+      TfLiteNode* node =
+          &(subgraph_allocations_[subgraph_idx].node_and_registrations[i].node);
+      const TFLMRegistration* registration = subgraph_allocations_[subgraph_idx]
+                                                 .node_and_registrations[i]
+                                                 .registration;
       // registration is allocated outside the interpreter, so double check to
       // make sure it's not nullptr;
       if (registration != nullptr && registration->free != nullptr) {
@@ -180,14 +160,12 @@ TfLiteStatus MicroInterpreterGraph::FreeSubgraphs() {
     }
   }
   current_subgraph_index_ = previous_subgraph_idx;
-  current_operator_index_ = previous_operator_idx;
 
   return kTfLiteOk;
 }
 
 TfLiteStatus MicroInterpreterGraph::InvokeSubgraph(int subgraph_idx) {
   int previous_subgraph_idx = current_subgraph_index_;
-  uint32_t previous_operator_idx = current_operator_index_;
   current_subgraph_index_ = subgraph_idx;
 
   if (static_cast<size_t>(subgraph_idx) >= subgraphs_->size()) {
@@ -196,15 +174,12 @@ TfLiteStatus MicroInterpreterGraph::InvokeSubgraph(int subgraph_idx) {
     return kTfLiteError;
   }
   uint32_t operators_size = NumSubgraphOperators(model_, subgraph_idx);
-  for (current_operator_index_ = 0; current_operator_index_ < operators_size;
-       ++current_operator_index_) {
-    TfLiteNode* node = &(subgraph_allocations_[subgraph_idx]
-                             .node_and_registrations[current_operator_index_]
-                             .node);
-    const TFLMRegistration* registration =
-        subgraph_allocations_[subgraph_idx]
-            .node_and_registrations[current_operator_index_]
-            .registration;
+  for (size_t i = 0; i < operators_size; ++i) {
+    TfLiteNode* node =
+        &(subgraph_allocations_[subgraph_idx].node_and_registrations[i].node);
+    const TFLMRegistration* registration = subgraph_allocations_[subgraph_idx]
+                                               .node_and_registrations[i]
+                                               .registration;
 
 // This ifdef is needed (even though ScopedMicroProfiler itself is a no-op with
 // -DTF_LITE_STRIP_ERROR_STRINGS) because the function OpNameFromRegistration is
@@ -226,15 +201,13 @@ TfLiteStatus MicroInterpreterGraph::InvokeSubgraph(int subgraph_idx) {
 
     if (invoke_status == kTfLiteError) {
       MicroPrintf("Node %s (number %d) failed to invoke with status %d",
-                  OpNameFromRegistration(registration), current_operator_index_,
-                  invoke_status);
+                  OpNameFromRegistration(registration), i, invoke_status);
       return kTfLiteError;
     } else if (invoke_status != kTfLiteOk) {
       return invoke_status;
     }
   }
   current_subgraph_index_ = previous_subgraph_idx;
-  current_operator_index_ = previous_operator_idx;
   return kTfLiteOk;
 }
 
@@ -286,9 +259,7 @@ TfLiteEvalTensor* MicroInterpreterGraph::GetSubgraphInput(int subgraph_idx,
 }
 
 size_t MicroInterpreterGraph::NumSubgraphOutputs(int subgraph_idx) {
-  return model_->subgraphs()->Get(subgraph_idx)->outputs() == nullptr
-             ? 0
-             : model_->subgraphs()->Get(subgraph_idx)->outputs()->size();
+  return model_->subgraphs()->Get(subgraph_idx)->outputs()->size();
 }
 
 TfLiteEvalTensor* MicroInterpreterGraph::GetSubgraphOutput(int subgraph_idx,

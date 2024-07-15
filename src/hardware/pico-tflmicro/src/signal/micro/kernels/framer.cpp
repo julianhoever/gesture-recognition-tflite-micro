@@ -48,7 +48,7 @@ struct TFLMSignalFramerParams {
   tflite::tflm_signal::CircularBuffer** circular_buffers;
 };
 
-void FramerResetState(TFLMSignalFramerParams* params) {
+void ResetState(TFLMSignalFramerParams* params) {
   for (int i = 0; i < params->outer_dims; ++i) {
     tflite::tflm_signal::CircularBufferReset(params->circular_buffers[i]);
     if (params->prefill) {
@@ -58,7 +58,7 @@ void FramerResetState(TFLMSignalFramerParams* params) {
   }
 }
 
-void* FramerInit(TfLiteContext* context, const char* buffer, size_t length) {
+void* Init(TfLiteContext* context, const char* buffer, size_t length) {
   const uint8_t* buffer_t = reinterpret_cast<const uint8_t*>(buffer);
 
   auto* params =
@@ -76,7 +76,7 @@ void* FramerInit(TfLiteContext* context, const char* buffer, size_t length) {
   return params;
 }
 
-TfLiteStatus FramerPrepare(TfLiteContext* context, TfLiteNode* node) {
+TfLiteStatus Prepare(TfLiteContext* context, TfLiteNode* node) {
   TF_LITE_ENSURE_EQ(context, NumInputs(node), 1);
   TF_LITE_ENSURE_EQ(context, NumOutputs(node), 2);
 
@@ -132,7 +132,7 @@ TfLiteStatus FramerPrepare(TfLiteContext* context, TfLiteNode* node) {
         capacity, params->state_buffers[i], state_size);
   }
 
-  FramerResetState(params);
+  ResetState(params);
 
   micro_context->DeallocateTempTfLiteTensor(input);
   micro_context->DeallocateTempTfLiteTensor(output);
@@ -141,7 +141,7 @@ TfLiteStatus FramerPrepare(TfLiteContext* context, TfLiteNode* node) {
   return kTfLiteOk;
 }
 
-TfLiteStatus FramerEval(TfLiteContext* context, TfLiteNode* node) {
+TfLiteStatus Eval(TfLiteContext* context, TfLiteNode* node) {
   auto* params = reinterpret_cast<TFLMSignalFramerParams*>(node->user_data);
 
   const TfLiteEvalTensor* input =
@@ -181,8 +181,8 @@ TfLiteStatus FramerEval(TfLiteContext* context, TfLiteNode* node) {
   return kTfLiteOk;
 }
 
-void FramerReset(TfLiteContext* context, void* buffer) {
-  FramerResetState(static_cast<TFLMSignalFramerParams*>(buffer));
+void Reset(TfLiteContext* context, void* buffer) {
+  ResetState(static_cast<TFLMSignalFramerParams*>(buffer));
 }
 
 }  // namespace
@@ -190,8 +190,8 @@ void FramerReset(TfLiteContext* context, void* buffer) {
 namespace tflm_signal {
 // TODO(b/286250473): remove namespace once de-duped libraries above
 TFLMRegistration* Register_FRAMER() {
-  static TFLMRegistration r = tflite::micro::RegisterOp(
-      FramerInit, FramerPrepare, FramerEval, nullptr, FramerReset);
+  static TFLMRegistration r =
+      tflite::micro::RegisterOp(Init, Prepare, Eval, nullptr, Reset);
   return &r;
 }
 }  // namespace tflm_signal

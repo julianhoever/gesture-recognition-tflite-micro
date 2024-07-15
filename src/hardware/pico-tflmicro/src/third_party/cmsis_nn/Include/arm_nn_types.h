@@ -22,8 +22,8 @@
  * Description:  Public header file to contain the CMSIS-NN structs for the
  *               TensorFlowLite micro compliant functions
  *
- * $Date:        11 April 2024
- * $Revision:    V.3.2.0
+ * $Date:        19 January 2024
+ * $Revision:    V.3.0.0
  *
  * Target :  Arm(R) M-Profile Architecture
  * -------------------------------------------------------------------- */
@@ -31,7 +31,6 @@
 #ifndef ARM_NN_TYPES_H
 #define ARM_NN_TYPES_H
 
-#include <stdbool.h>
 #include <stdint.h>
 
 /**
@@ -70,13 +69,6 @@ typedef struct
     void *buf;    /**< Pointer to a buffer needed for the optimization */
     int32_t size; /**< Buffer size */
 } cmsis_nn_context;
-
-/** CMSIS-NN object used to hold bias data for int16 variants. */
-typedef struct
-{
-    const void *data;         /**< Pointer to bias data */
-    const bool is_int32_bias; /**< Indicate type of bias data. True means int32 else int64 */
-} cmsis_nn_bias_data;
 
 /** CMSIS-NN object to contain the dimensions of the tensors */
 typedef struct
@@ -199,15 +191,15 @@ typedef struct
 {
     int32_t input_multiplier;
     int32_t input_shift;
-    const void *input_weights;
-    const void *input_effective_bias; /**< Bias added with precomputed kernel_sum * lhs_offset*/
+    const int8_t *input_weights;
+    const int32_t *input_effective_bias; /**< Bias added with precomputed kernel_sum * lhs_offset*/
 
     int32_t hidden_multiplier;
     int32_t hidden_shift;
-    const void *hidden_weights;
-    const void *hidden_effective_bias; /**< Precomputed kernel_sum * lhs_offset*/
+    const int8_t *hidden_weights;
+    const int32_t *hidden_effective_bias; /**< Precomputed kernel_sum * lhs_offset*/
 
-    const void *bias;
+    const int32_t *bias;
     arm_nn_activation_type activation_type;
 } cmsis_nn_lstm_gate;
 

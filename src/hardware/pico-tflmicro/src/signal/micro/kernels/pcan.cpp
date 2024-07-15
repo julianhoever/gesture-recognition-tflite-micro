@@ -42,7 +42,7 @@ struct TfLitePcanParams {
   int snr_shift;
 };
 
-void* PcanInit(TfLiteContext* context, const char* buffer, size_t length) {
+void* Init(TfLiteContext* context, const char* buffer, size_t length) {
   auto* params = static_cast<TfLitePcanParams*>(
       context->AllocatePersistentBuffer(context, sizeof(TfLitePcanParams)));
 
@@ -52,7 +52,7 @@ void* PcanInit(TfLiteContext* context, const char* buffer, size_t length) {
   return params;
 }
 
-TfLiteStatus PcanPrepare(TfLiteContext* context, TfLiteNode* node) {
+TfLiteStatus Prepare(TfLiteContext* context, TfLiteNode* node) {
   TF_LITE_ENSURE_EQ(context, NumInputs(node), 3);
   TF_LITE_ENSURE_EQ(context, NumOutputs(node), 1);
 
@@ -88,7 +88,7 @@ TfLiteStatus PcanPrepare(TfLiteContext* context, TfLiteNode* node) {
   return kTfLiteOk;
 }
 
-TfLiteStatus PcanEval(TfLiteContext* context, TfLiteNode* node) {
+TfLiteStatus Eval(TfLiteContext* context, TfLiteNode* node) {
   auto* params = reinterpret_cast<TfLitePcanParams*>(node->user_data);
 
   const TfLiteEvalTensor* input =
@@ -126,8 +126,7 @@ TfLiteStatus PcanEval(TfLiteContext* context, TfLiteNode* node) {
 }
 
 TFLMRegistration* Register_PCAN() {
-  static TFLMRegistration r =
-      tflite::micro::RegisterOp(PcanInit, PcanPrepare, PcanEval);
+  static TFLMRegistration r = tflite::micro::RegisterOp(Init, Prepare, Eval);
   return &r;
 }
 
