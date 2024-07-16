@@ -3,7 +3,7 @@
 #include "processing_functions.h"
 
 
-float* calculate_mean_per_channel(
+float* channelwiseMean(
         const float values[],
         const uint32_t length,
         const uint32_t channels) {
@@ -21,12 +21,12 @@ float* calculate_mean_per_channel(
 }
 
 
-float* calculate_variance_per_channel(
+float* channelwiseVariance(
         const float values[],
         const uint32_t length,
         const uint32_t channels) {
 
-    float* means = calculate_mean_per_channel(values, length, channels);
+    const float* means = channelwiseMean(values, length, channels);
     float* variances = new float[channels] { 0.0f };
     
     for (uint32_t chIdx = 0; chIdx < channels; chIdx++) {
@@ -40,13 +40,13 @@ float* calculate_variance_per_channel(
 }
 
 
-void normalize_per_channels(
+void normalizeChannelwise(
         float values[],
         const uint32_t length,
         const uint32_t channels) {
 
-    float* means = calculate_mean_per_channel(values, length, channels);
-    float* variances = calculate_variance_per_channel(values, length, channels);
+    const float* means = channelwiseMean(values, length, channels);
+    const float* variances = channelwiseVariance(values, length, channels);
 
     for (uint32_t chIdx = 0; chIdx < channels; chIdx++) {
         float standardDeviation = sqrt(variances[chIdx]);
