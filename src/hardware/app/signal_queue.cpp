@@ -13,7 +13,7 @@ SignalQueue::SignalQueue(
     eventHandler(nullptr) { }
 
 
-void SignalQueue::add(uint16_t values[]) {
+void SignalQueue::add(int16_t values[]) {
     if (this->isFilled()) {
         this->removeHead();
         if (this->hasEventHandler()) this->overflowCounter++;
@@ -32,7 +32,7 @@ void SignalQueue::add(uint16_t values[]) {
 }
 
 void SignalQueue::copyToBuffer(float buffer[]) {
-    std::list<uint16_t>::iterator iter = this->rawQueue.begin();
+    std::list<int16_t>::iterator iter = this->rawQueue.begin();
 
     for (uint32_t i = 0; i < this->rawQueue.size(); i++) {
         buffer[i] = *iter;
