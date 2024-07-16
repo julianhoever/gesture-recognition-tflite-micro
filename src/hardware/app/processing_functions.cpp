@@ -39,6 +39,7 @@ float* calculate_variance_per_channel(
     return variances;
 }
 
+
 void normalize_per_channels(
         float values[],
         const uint32_t length,
