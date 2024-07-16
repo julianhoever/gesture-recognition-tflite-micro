@@ -1,5 +1,5 @@
-#ifndef QUEUE_H
-#define QUEUE_H
+#ifndef SIGNAL_QUEUE_H
+#define SIGNAL_QUEUE_H
 
 #include <cstdint>
 #include <list>
