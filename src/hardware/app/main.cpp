@@ -11,12 +11,14 @@
 #include "signal_queue.h"
 #include "processing_functions.h"
 #include "led.h"
+#include "hardware_setup.h"
+#include "adxl345.h"
 
 const uint32_t TENSOR_ARENA_SIZE = 1024 * 100;
 const uint32_t CHANNEL_COUNT = 3;
 const uint32_t INPUT_FEATURE_COUNT = CHANNEL_COUNT * 125;
 const uint32_t OUTPUT_FEATURE_COUNT = 4;
-const uint32_t INFERENCE_EVERY_NTH_POINTS = 20;
+const uint32_t INFERENCE_EVERY_NTH_POINTS = 10;
 
 
 TfLiteInterpreter getInterpreter() {
@@ -53,45 +55,46 @@ void runInference(SignalQueue* queue) {
     interpreter.runInference(inputBuffer, outputBuffer);
     const uint32_t predictedClass = argmax(outputBuffer, OUTPUT_FEATURE_COUNT);
 
-    switch (predictedClass)
-    {
-    case 1:
-        setRgbLed(255, 0, 0);
-        break;
-    case 2:
-        setRgbLed(0, 255, 0);
-        break;
-    case 3:
-        setRgbLed(0, 0, 255);
-        break;
-    default:
-        setRgbLed(0, 0, 0);
-        break;
+    switch (predictedClass) {
+        case 1:
+            setRgbLed(true, false, false);
+            break;
+        case 2:
+            setRgbLed(false, true, false);
+            break;
+        case 3:
+            setRgbLed(false, false, true);
+            break;
+        default:
+            setRgbLed(false, false, false);
+            break;
     }
 }
 
 
 int main() {
     stdio_init_all();
+    initializePeripherals();
+    setup_adxl345();
 
-    while(getchar() != 'r') {}
-    
     SignalQueue queue(INPUT_FEATURE_COUNT, CHANNEL_COUNT);
     queue.notifyOnOverflowingElement(INFERENCE_EVERY_NTH_POINTS, runInference);
 
-    uint64_t start, stop = 0; 
+    uint64_t current_time, previous_time;
+    int16_t accel[CHANNEL_COUNT];
+
+    previous_time = 0;
 
     while (true) {
-        start = to_us_since_boot(get_absolute_time());
+        current_time = to_us_since_boot(get_absolute_time());
+        printf("FPS: %f\n", 1.0f / (current_time - previous_time) / 1e-6);
+        previous_time = current_time;
 
-        // TODO: collect measurement
-
-        uint16_t a[] = {1, 2, 3};
-        queue.add(a);
+        adxl345_readData(&accel[0], &accel[1], &accel[2]);
+        queue.add(accel);
         sleep_ms(16);
 
-        stop = to_us_since_boot(get_absolute_time());
-        printf("%f\n", 1.0f/(stop-start)/1e-6);
+        printf("x: %d ; y: %d ; z: %d\n", accel[0], accel[1], accel[2]);
     }
 
     return 0;
