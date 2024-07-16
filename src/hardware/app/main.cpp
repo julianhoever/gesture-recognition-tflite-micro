@@ -2,16 +2,21 @@
 #include <cstdint>
 
 #include "pico/stdio.h"
+#include "pico/stdlib.h"
+#include "pico/time.h"
 #include "tensorflow/lite/micro/micro_mutable_op_resolver.h"
 
-#include "preprocessing_functions.h"
-#include "tflite_interpreter.h"
 #include "model.h"
+#include "tflite_interpreter.h"
+#include "signal_queue.h"
+#include "processing_functions.h"
+#include "led.h"
 
-
-const uint32_t INPUT_FEATURE_COUNT = 125 * 3;
-const uint32_t OUTPUT_FEATURE_COUNT = 4;
 const uint32_t TENSOR_ARENA_SIZE = 1024 * 100;
+const uint32_t CHANNEL_COUNT = 3;
+const uint32_t INPUT_FEATURE_COUNT = CHANNEL_COUNT * 125;
+const uint32_t OUTPUT_FEATURE_COUNT = 4;
+const uint32_t INFERENCE_EVERY_NTH_POINTS = 20;
 
 
 TfLiteInterpreter getInterpreter() {
@@ -35,21 +40,59 @@ TfLiteInterpreter getInterpreter() {
 }
 
 
+TfLiteInterpreter interpreter = getInterpreter();
+
+
+void runInference(SignalQueue* queue) {
+    static float inputBuffer[INPUT_FEATURE_COUNT];
+    float outputBuffer[OUTPUT_FEATURE_COUNT];
+    
+    queue->copyToBuffer(inputBuffer);
+
+    normalizeChannelwise(inputBuffer, INPUT_FEATURE_COUNT, CHANNEL_COUNT);
+    interpreter.runInference(inputBuffer, outputBuffer);
+    const uint32_t predictedClass = argmax(outputBuffer, OUTPUT_FEATURE_COUNT);
+
+    switch (predictedClass)
+    {
+    case 1:
+        setRgbLed(255, 0, 0);
+        break;
+    case 2:
+        setRgbLed(0, 255, 0);
+        break;
+    case 3:
+        setRgbLed(0, 0, 255);
+        break;
+    default:
+        setRgbLed(0, 0, 0);
+        break;
+    }
+}
+
+
 int main() {
     stdio_init_all();
 
     while(getchar() != 'r') {}
     
-    TfLiteInterpreter interpreter = getInterpreter();
+    SignalQueue queue(INPUT_FEATURE_COUNT, CHANNEL_COUNT);
+    queue.notifyOnOverflowingElement(INFERENCE_EVERY_NTH_POINTS, runInference);
 
-    float inputBuffer[INPUT_FEATURE_COUNT] = {0.0f};
-    float outputBuffer[OUTPUT_FEATURE_COUNT] = {0.0f};
+    uint64_t start, stop = 0; 
 
-    normalize(inputBuffer, INPUT_FEATURE_COUNT);
+    while (true) {
+        start = to_us_since_boot(get_absolute_time());
 
-    interpreter.runInference(inputBuffer, outputBuffer);
+        // TODO: collect measurement
 
-    printf("Done\n");
+        uint16_t a[] = {1, 2, 3};
+        queue.add(a);
+        sleep_ms(16);
+
+        stop = to_us_since_boot(get_absolute_time());
+        printf("%f\n", 1.0f/(stop-start)/1e-6);
+    }
 
     return 0;
 }
