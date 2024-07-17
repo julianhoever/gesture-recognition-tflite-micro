@@ -20,7 +20,7 @@ void SignalQueue::add(int16_t values[]) {
     }
 
     for (uint32_t i = 0; i < this->channels; i++) {
-        this->rawQueue.push_front(values[i]);
+        this->rawQueue.push_back(values[i]);
     }
     
     if (this->isFilled() && this->hasEventHandler()) {
@@ -68,4 +68,3 @@ void SignalQueue::removeHead() {
         this->rawQueue.pop_front();
     }
 }
-
