@@ -5,7 +5,7 @@ import tensorflow as tf
 
 from ml_dev.gesture_cnn_model import gesture_cnn_model
 from ml_dev.gesture_dataset import load_gesture_data
-from ml_dev.preprocessing import normalize
+from ml_dev.preprocessing import preprocess
 from ml_dev.environment import (
     DATA_ROOT,
     MODEL_WEIGHTS_FILE,
@@ -18,7 +18,7 @@ def representative_dataset() -> Generator[list[tf.Tensor], Any, Any]:
     samples, _ = load_gesture_data(
         DATA_ROOT, training=True, window_size=SAMPLE_SHAPE[0]
     )
-    samples = normalize(samples)
+    samples = preprocess(samples)
     for sample in samples:
         sample_with_batch_dim = tf.expand_dims(sample, axis=0)
         yield [sample_with_batch_dim]

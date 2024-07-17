@@ -4,7 +4,7 @@ import tensorflow as tf
 
 from ml_dev.gesture_cnn_model import gesture_cnn_model
 from ml_dev.gesture_dataset import load_gesture_data
-from ml_dev.preprocessing import normalize
+from ml_dev.preprocessing import preprocess
 from ml_dev.environment import DATA_ROOT, MODEL_WEIGHTS_FILE, SAMPLE_SHAPE
 
 
@@ -14,7 +14,7 @@ def main() -> None:
     )
     x_train, y_train = load_data(training=True)
     x_val, y_val = load_data(training=False)
-    x_train, x_val = normalize(x_train), normalize(x_val)
+    x_train, x_val = preprocess(x_train), preprocess(x_val)
 
     model = gesture_cnn_model((None, *SAMPLE_SHAPE))
     model.load_weights(MODEL_WEIGHTS_FILE)

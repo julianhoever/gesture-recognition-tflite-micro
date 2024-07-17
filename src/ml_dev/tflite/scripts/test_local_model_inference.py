@@ -1,7 +1,7 @@
 import numpy as np
 
 from ml_dev.gesture_dataset import load_gesture_data
-from ml_dev.preprocessing import normalize
+from ml_dev.preprocessing import preprocess
 from ml_dev.tflite.execute_tflite_model import execute_uint8_tflite_model
 from ml_dev.environment import DATA_ROOT, TFLITE_MODEL_FILE, SAMPLE_SHAPE
 
@@ -19,7 +19,7 @@ def main() -> None:
 
 def _load_data(training: bool) -> tuple[np.ndarray, np.ndarray]:
     x, y = load_gesture_data(DATA_ROOT, training, window_size=SAMPLE_SHAPE[0], stride=1)
-    x = normalize(x).numpy()
+    x = preprocess(x).numpy()
     y = np.argmax(y.numpy(), axis=-1)
     return x, y
 
