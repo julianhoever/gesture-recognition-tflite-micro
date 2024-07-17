@@ -49,22 +49,7 @@ TfLiteInterpreter getInterpreter() {
 TfLiteInterpreter interpreter = getInterpreter();
 
 
-void runInference(SignalQueue* queue) {
-    static float inputBuffer[INPUT_FEATURE_COUNT];
-    float outputBuffer[OUTPUT_FEATURE_COUNT];
-
-    queue->copyToBuffer(inputBuffer);
-
-    preprocess(inputBuffer, INPUT_FEATURE_COUNT, CHANNEL_COUNT);
-    interpreter.runInference(inputBuffer, outputBuffer);
-    const uint32_t predictedClass = argmax(outputBuffer, OUTPUT_FEATURE_COUNT);
-
-#if DEBUG_PRINT_CLASS_PROBS
-    printf(
-        "Idle: %.04f ; Snake: %.04f ; UpDown: %.04f ; Wave: %.04f\n",
-        outputBuffer[0], outputBuffer[1], outputBuffer[2], outputBuffer[3]);
-#endif
-
+void displayPredictedClass(uint32_t predictedClass) {
     switch (predictedClass) {
         case clsSnake:
             setRgbLed(true, false, false);
@@ -79,6 +64,25 @@ void runInference(SignalQueue* queue) {
             setRgbLed(false, false, false);
             break;
     }
+}
+
+
+void runInference(SignalQueue* queue) {
+    static float inputBuffer[INPUT_FEATURE_COUNT];
+    float outputBuffer[OUTPUT_FEATURE_COUNT];
+
+    queue->copyToBuffer(inputBuffer);
+    centerChannels(inputBuffer, INPUT_FEATURE_COUNT, CHANNEL_COUNT);
+    interpreter.runInference(inputBuffer, outputBuffer);
+
+#if DEBUG_PRINT_CLASS_PROBS
+    printf(
+        "Idle: %.04f ; Snake: %.04f ; UpDown: %.04f ; Wave: %.04f\n",
+        outputBuffer[0], outputBuffer[1], outputBuffer[2], outputBuffer[3]);
+#endif
+
+    const uint32_t predictedClass = argmax(outputBuffer, OUTPUT_FEATURE_COUNT);
+    displayPredictedClass(predictedClass);
 }
 
 
