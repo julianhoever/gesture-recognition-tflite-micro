@@ -5,7 +5,7 @@ import tensorflow as tf
 import matplotlib.pyplot as plt
 
 from ml_dev.gesture_dataset import load_gesture_data
-from ml_dev.preprocessing import normalize
+from ml_dev.preprocessing import preprocess
 from ml_dev.gesture_cnn_model import gesture_cnn_model
 from ml_dev.environment import DATA_ROOT, OUTPUTS_DIR, MODEL_WEIGHTS_FILE, SAMPLE_SHAPE
 
@@ -51,8 +51,8 @@ def _load_data() -> tuple[tuple[tf.Tensor, tf.Tensor], tuple[tf.Tensor, tf.Tenso
     x_train, y_train = load_data(training=True)
     x_val, y_val = load_data(training=False)
 
-    x_train = normalize(x_train)
-    x_val = normalize(x_val)
+    x_train = preprocess(x_train)
+    x_val = preprocess(x_val)
 
     return (x_train, y_train), (x_val, y_val)
 
