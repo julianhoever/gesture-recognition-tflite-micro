@@ -1,5 +1,4 @@
 #include <cstdint>
-#include <cmath>
 #include "processing_functions.h"
 
 
@@ -33,33 +32,6 @@ void centerChannels(
             values[val_idx] = values[val_idx] - means[ch_idx];
         }
     }
-}
-
-
-float maxAbs(const float values[], const uint32_t length) {
-    float maxAbsValue = abs(values[0]);
-    float currentAbsValue;
-    for (uint32_t idx = 1; idx < length; idx++) {
-        currentAbsValue = abs(values[idx]);
-        if (currentAbsValue > maxAbsValue) {
-            maxAbsValue = currentAbsValue;
-        }
-    }
-    return maxAbsValue;
-}
-
-
-void rescale(float values[], const uint32_t length) {
-    const float maxAbsValue = maxAbs(values, length);
-    for (uint32_t idx = 0; idx < length; idx++) {
-        values[idx] /= maxAbsValue;
-    }
-}
-
-
-void preprocess(float values[], const uint32_t length, const uint32_t channels) {
-    centerChannels(values, length, channels);
-    rescale(values, length);
 }
 
 

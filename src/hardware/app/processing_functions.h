@@ -4,7 +4,7 @@
 #include <cstdint>
 
 
-void preprocess(float values[], const uint32_t length, const uint32_t channels);
+void centerChannels(float values[], const uint32_t length, const uint32_t channels);
 uint32_t argmax(const float values[], const uint32_t length);
 
 #endif
