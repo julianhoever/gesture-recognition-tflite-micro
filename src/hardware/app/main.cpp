@@ -51,7 +51,7 @@ void runInference(SignalQueue* queue) {
     
     queue->copyToBuffer(inputBuffer);
 
-    normalizeChannelwise(inputBuffer, INPUT_FEATURE_COUNT, CHANNEL_COUNT);
+    preprocess(inputBuffer, INPUT_FEATURE_COUNT, CHANNEL_COUNT);
     interpreter.runInference(inputBuffer, outputBuffer);
     const uint32_t predictedClass = argmax(outputBuffer, OUTPUT_FEATURE_COUNT);
 

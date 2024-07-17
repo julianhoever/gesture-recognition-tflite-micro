@@ -21,37 +21,25 @@ float* channelwiseMean(
 }
 
 
-float* channelwiseVariance(
-        const float values[],
-        const uint32_t length,
-        const uint32_t channels) {
-
-    const float* means = channelwiseMean(values, length, channels);
-    float* variances = new float[channels] { 0.0f };
-    
-    for (uint32_t chIdx = 0; chIdx < channels; chIdx++) {
-        for (uint32_t valIdx = 0; valIdx < length; valIdx += chIdx + 1) {
-            variances[chIdx] += pow(values[valIdx] - means[chIdx], 2);
+float maxAbs(const float values[], const uint32_t length) {
+    float maxAbsValue = abs(values[0]);
+    float currentAbsValue;
+    for (uint32_t idx = 0; idx < length; idx++) {
+        currentAbsValue = abs(values[idx]);
+        if (currentAbsValue > maxAbsValue) {
+            maxAbsValue = currentAbsValue;
         }
-        variances[chIdx] /= length / channels;
-    } 
-    
-    return variances;
+    }
+    return maxAbsValue;
 }
 
 
-void normalizeChannelwise(
-        float values[],
-        const uint32_t length,
-        const uint32_t channels) {
-
-    const float* means = channelwiseMean(values, length, channels);
-    const float* variances = channelwiseVariance(values, length, channels);
-
-    for (uint32_t chIdx = 0; chIdx < channels; chIdx++) {
-        float standardDeviation = sqrt(variances[chIdx]);
-        for (uint32_t valIdx = 0; valIdx < length; valIdx += chIdx + 1) {
-            values[valIdx] = (values[valIdx] - means[chIdx]) / standardDeviation;
+void preprocess(float values[], const uint32_t length, const uint32_t channels) {
+    const float* const means = channelwiseMean(values, length, channels);
+    const float maxAbsValue = maxAbs(values, length);
+    for (uint32_t ch_idx = 0; ch_idx < channels; ch_idx++) {
+        for (uint32_t val_idx = 0; val_idx < length; val_idx += ch_idx + 1) {
+            values[val_idx] = (values[val_idx] - means[ch_idx]) / maxAbsValue;
         }
     }
 }
@@ -59,7 +47,7 @@ void normalizeChannelwise(
 
 uint32_t argmax(const float values[], const uint32_t length) {
     uint32_t maxIdx = 0;
-    for (uint32_t idx = 0; idx < length; idx++) {
+    for (uint32_t idx = 1; idx < length; idx++) {
         if (values[idx] > values[maxIdx]) {
             maxIdx = idx;
         }
