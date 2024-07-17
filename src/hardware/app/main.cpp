@@ -104,7 +104,7 @@ int main() {
 
         adxl345_readData(&accel[0], &accel[1], &accel[2]);
         queue.add(accel);
-        sleep_ms(16);
+        sleep_ms(15);
     }
 
     return 0;
