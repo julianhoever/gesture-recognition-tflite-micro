@@ -22,7 +22,7 @@ const uint32_t CHANNEL_COUNT = 3;
 const uint32_t INPUT_FEATURE_COUNT = CHANNEL_COUNT * 125;
 const uint32_t OUTPUT_FEATURE_COUNT = 4;
 const uint32_t INFERENCE_EVERY_NTH_POINTS = 10;
-enum TargetClasses { clsIdle, clsSnake, clsUpDown, clsWave };
+enum TargetClasses { clsIdle, clsSnake, clsUpDown, clsWave, clsUndefined };
 
 
 TfLiteInterpreter getInterpreter() {
@@ -51,6 +51,9 @@ TfLiteInterpreter interpreter = getInterpreter();
 
 void displayPredictedClass(uint32_t predictedClass) {
     switch (predictedClass) {
+        case clsIdle:
+            setRgbLed(false, false, false);
+            break;
         case clsSnake:
             setRgbLed(true, false, false);
             break;
@@ -81,7 +84,10 @@ void runInference(SignalQueue* queue) {
         outputBuffer[0], outputBuffer[1], outputBuffer[2], outputBuffer[3]);
 #endif
 
-    const uint32_t predictedClass = argmax(outputBuffer, OUTPUT_FEATURE_COUNT);
+    uint32_t predictedClass = argmax(outputBuffer, OUTPUT_FEATURE_COUNT);
+    if (outputBuffer[predictedClass] < 0.95) {
+        predictedClass = clsUndefined;
+    }
     displayPredictedClass(predictedClass);
 }
 
