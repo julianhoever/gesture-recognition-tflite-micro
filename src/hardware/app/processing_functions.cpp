@@ -2,21 +2,21 @@
 #include "processing_functions.h"
 
 
-float* channelwiseMean(
-        const float values[],
+void calculateChannelwiseMean(
+        const float inValues[],
         const uint32_t length,
-        const uint32_t channels) {
-
-    float* means = new float[channels] { 0.0f };
+        const uint32_t channels,
+        float outMeans[]) {
 
     for (uint32_t chIdx = 0; chIdx < channels; chIdx++) {
+        outMeans[chIdx] = 0;
+
         for (uint32_t valIdx = chIdx; valIdx < length; valIdx += channels) {
-            means[chIdx] += values[valIdx];
+            outMeans[chIdx] += inValues[valIdx];
         }
-        means[chIdx] /= length / channels;
+
+        outMeans[chIdx] /= length / channels;
     }
-    
-    return means;
 }
 
 
@@ -25,7 +25,8 @@ void centerChannels(
         const uint32_t length,
         const uint32_t channels) {
 
-    const float* const means = channelwiseMean(values, length, channels);
+    float means[channels];
+    calculateChannelwiseMean(values, length, channels, means);
     
     for (uint32_t chIdx = 0; chIdx < channels; chIdx++) {
         for (uint32_t valIdx = chIdx; valIdx < length; valIdx += channels) {
