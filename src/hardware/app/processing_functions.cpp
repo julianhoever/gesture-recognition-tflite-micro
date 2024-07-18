@@ -10,7 +10,7 @@ float* channelwiseMean(
     float* means = new float[channels] { 0.0f };
 
     for (uint32_t chIdx = 0; chIdx < channels; chIdx++) {
-        for (uint32_t valIdx = 0; valIdx < length; valIdx += chIdx + 1) {
+        for (uint32_t valIdx = chIdx; valIdx < length; valIdx += channels) {
             means[chIdx] += values[valIdx];
         }
         means[chIdx] /= length / channels;
@@ -27,9 +27,9 @@ void centerChannels(
 
     const float* const means = channelwiseMean(values, length, channels);
     
-    for (uint32_t ch_idx = 0; ch_idx < channels; ch_idx++) {
-        for (uint32_t val_idx = 0; val_idx < length; val_idx += ch_idx + 1) {
-            values[val_idx] = values[val_idx] - means[ch_idx];
+    for (uint32_t chIdx = 0; chIdx < channels; chIdx++) {
+        for (uint32_t valIdx = chIdx; valIdx < length; valIdx += channels) {
+            values[valIdx] = values[valIdx] - means[chIdx];
         }
     }
 }
