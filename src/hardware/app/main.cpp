@@ -1,5 +1,6 @@
 #include <cstdio>
 #include <cstdint>
+#include <cmath>
 
 #include "pico/stdio.h"
 #include "pico/stdlib.h"
@@ -49,23 +50,15 @@ TfLiteInterpreter getInterpreter() {
 TfLiteInterpreter interpreter = getInterpreter();
 
 
-void displayPredictedClass(uint32_t predictedClass) {
-    switch (predictedClass) {
-        case clsIdle:
-            setRgbLed(false, false, false);
-            break;
-        case clsSnake:
-            setRgbLed(true, false, false);
-            break;
-        case clsUpDown:
-            setRgbLed(false, true, false);
-            break;
-        case clsWave:
-            setRgbLed(false, false, true);
-            break;
-        default:
-            setRgbLed(false, false, false);
-            break;
+void displayPredictedClass(float* predictions) {
+    if (predictions[clsIdle] >= 0.9) {
+        setRgbLed(0, 0, 0);
+    }
+    else {
+        uint8_t level_red = ceil((255 * predictions[clsSnake]));
+        uint8_t level_green = ceil(255 * predictions[clsUpDown]);
+        uint8_t level_blue = ceil(255 * predictions[clsWave]);
+        setRgbLed(level_red, level_green, level_blue);
     }
 }
 
@@ -84,11 +77,7 @@ void runInference(SignalQueue* queue) {
         outputBuffer[0], outputBuffer[1], outputBuffer[2], outputBuffer[3]);
 #endif
 
-    uint32_t predictedClass = argmax(outputBuffer, OUTPUT_FEATURE_COUNT);
-    if (outputBuffer[predictedClass] < 0.95) {
-        predictedClass = clsUndefined;
-    }
-    displayPredictedClass(predictedClass);
+    displayPredictedClass(outputBuffer);
 }
 
 
