@@ -10,6 +10,7 @@ target_sources(gesture_app PRIVATE ${SRC})
 target_include_directories(gesture_app PRIVATE ${CMAKE_CURRENT_LIST_DIR})
 target_link_libraries(gesture_app
     pico_stdlib
+    hardware_pwm
     hardware_setup
     sensor_lib
     pico-tflmicro
