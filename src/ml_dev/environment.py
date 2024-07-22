@@ -1,5 +1,7 @@
 from pathlib import Path
 
+import torch
+
 # Paths
 
 DATA_ROOT = Path("data/gestures")
@@ -13,3 +15,14 @@ CPP_ARRAY_MODEL_FILE = OUTPUTS_DIR / "model.cpp"
 # ML Constants
 
 SAMPLE_SHAPE = (125, 3)
+
+
+def _determine_available_device() -> str:
+    if torch.cuda.is_available():
+        return "cuda"
+    elif torch.backends.mps.is_available():
+        return "mps"
+    return "cpu"
+
+
+PT_DEVICE = _determine_available_device()
