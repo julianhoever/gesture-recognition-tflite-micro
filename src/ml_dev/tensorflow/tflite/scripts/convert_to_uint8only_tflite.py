@@ -9,7 +9,7 @@ from ml_dev.tensorflow.preprocessing import preprocess
 from ml_dev.environment import (
     DATA_ROOT,
     TF_MODEL_WEIGHTS_FILE,
-    TFLITE_MODEL_FILE,
+    TF_TFLITE_MODEL_FILE,
     SAMPLE_SHAPE,
 )
 
@@ -36,7 +36,7 @@ def main() -> None:
     converter.inference_output_type = tf.uint8
     tflite_model = converter.convert()
 
-    with TFLITE_MODEL_FILE.open("wb") as out_file:
+    with TF_TFLITE_MODEL_FILE.open("wb") as out_file:
         out_file.write(tflite_model)
 
 

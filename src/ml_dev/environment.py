@@ -7,10 +7,15 @@ import torch
 DATA_ROOT = Path("data/gestures")
 OUTPUTS_DIR = Path("outputs")
 
-TF_MODEL_WEIGHTS_FILE = OUTPUTS_DIR / "model.weights.h5"
-PT_MODEL_WEIGHTS_FILE = OUTPUTS_DIR / "model.weights.pt"
-TFLITE_MODEL_FILE = OUTPUTS_DIR / "model.tflite"
-CPP_ARRAY_MODEL_FILE = OUTPUTS_DIR / "model.cpp"
+TF_OUTPUTS_DIR = OUTPUTS_DIR / "tensorflow"
+TF_MODEL_WEIGHTS_FILE = TF_OUTPUTS_DIR / "model.weights.h5"
+TF_TFLITE_MODEL_FILE = TF_OUTPUTS_DIR / "model.tflite"
+TF_CPP_ARRAY_MODEL_FILE = TF_OUTPUTS_DIR / "model.cpp"
+
+PT_OUTPUTS_DIR = OUTPUTS_DIR / "pytorch"
+PT_MODEL_WEIGHTS_FILE = PT_OUTPUTS_DIR / "model.weights.pt"
+PT_TFLITE_MODEL_FILE = PT_OUTPUTS_DIR / "model.tflite"
+PT_CPP_ARRAY_MODEL_FILE = PT_OUTPUTS_DIR / "model.cpp"
 
 # ML Constants
 

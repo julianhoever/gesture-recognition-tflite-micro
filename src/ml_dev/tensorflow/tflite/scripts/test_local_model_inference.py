@@ -3,15 +3,15 @@ import numpy as np
 from ml_dev.tensorflow.gesture_dataset import load_gesture_data
 from ml_dev.tensorflow.preprocessing import preprocess
 from ml_dev.tensorflow.tflite.execute_tflite_model import execute_uint8_tflite_model
-from ml_dev.environment import DATA_ROOT, TFLITE_MODEL_FILE, SAMPLE_SHAPE
+from ml_dev.environment import DATA_ROOT, TF_TFLITE_MODEL_FILE, SAMPLE_SHAPE
 
 
 def main() -> None:
     x_train, y_train = _load_data(training=True)
     x_val, y_val = _load_data(training=False)
 
-    pred_train = execute_uint8_tflite_model(TFLITE_MODEL_FILE, x_train)
-    pred_val = execute_uint8_tflite_model(TFLITE_MODEL_FILE, x_val)
+    pred_train = execute_uint8_tflite_model(TF_TFLITE_MODEL_FILE, x_train)
+    pred_val = execute_uint8_tflite_model(TF_TFLITE_MODEL_FILE, x_val)
 
     print(f"Train Accuracy: {_acc(pred_train, y_train):.04f}")
     print(f"Validation Accuracy: {_acc(pred_val, y_val):.04f}")
