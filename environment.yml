@@ -1,10 +1,10 @@
 name: gesture-recognition-tflite-rp2040
 channels:
   - conda-forge
-  - pytorch-test
+  - pytorch
 dependencies:
-  - python=3.11.*
-  - pytorch=2.4.*
+  - python=3.12
+  - pytorch::pytorch
   - tensorflow
   - matplotlib
   - numpy
@@ -14,5 +14,4 @@ dependencies:
   - black
   - pip
   - pip:
-    - ai-edge-torch==0.1.1
     - --editable .
