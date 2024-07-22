@@ -18,6 +18,7 @@ def main() -> None:
 
     model = gesture_cnn_model((None, *SAMPLE_SHAPE))
     model.load_weights(TF_MODEL_WEIGHTS_FILE)
+    model.summary()
 
     pred_train = model.predict(x_train)
     pred_val = model.predict(x_val)
