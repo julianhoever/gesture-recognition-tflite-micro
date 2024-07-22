@@ -5,7 +5,8 @@ from pathlib import Path
 DATA_ROOT = Path("data/gestures")
 OUTPUTS_DIR = Path("outputs")
 
-MODEL_WEIGHTS_FILE = OUTPUTS_DIR / "model.weights.h5"
+TF_MODEL_WEIGHTS_FILE = OUTPUTS_DIR / "model.weights.h5"
+PT_MODEL_WEIGHTS_FILE = OUTPUTS_DIR / "model.weights.pt"
 TFLITE_MODEL_FILE = OUTPUTS_DIR / "model.tflite"
 CPP_ARRAY_MODEL_FILE = OUTPUTS_DIR / "model.cpp"
 
