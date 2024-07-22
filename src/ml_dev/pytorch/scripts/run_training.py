@@ -7,6 +7,7 @@ from ml_dev.pytorch.training import History, train_model
 from ml_dev.pytorch.gesture_dataset import GestureDataset
 from ml_dev.pytorch.gesture_cnn_model import GestureCnnModel
 from ml_dev.pytorch.preprocessing import preprocess
+from ml_dev.pytorch.persistence import save_weights
 from ml_dev.environment import (
     DATA_ROOT,
     PT_OUTPUTS_DIR,
@@ -36,7 +37,7 @@ def main() -> None:
         device=PT_DEVICE,
     )
 
-    _save_model_weights(model)
+    save_weights(model, PT_MODEL_WEIGHTS_FILE)
     _plot_train_history(history)
 
 
@@ -53,10 +54,6 @@ def _get_datasets() -> tuple[GestureDataset, GestureDataset]:
 
 def _count_parameters(model: torch.nn.Module) -> int:
     return sum(p.numel() for p in model.parameters())
-
-
-def _save_model_weights(model: torch.nn.Module) -> None:
-    torch.save(model.state_dict(), PT_MODEL_WEIGHTS_FILE)
 
 
 def _plot_train_history(history: History) -> None:
