@@ -11,7 +11,9 @@ def _center_channels(data: tf.Tensor) -> tf.Tensor:
 
 
 def preprocess(data: tf.Tensor) -> tf.Tensor:
-    data *= DEVICE_SPECIFIC_SCALING
-    data = tf.clip_by_value(data, -ABS_MAX_DEVICE, ABS_MAX_DEVICE)
+    device_specific_scaling = ABS_MAX_DEVICE / ABS_MAX_DATA
+    data = tf.clip_by_value(
+        data * device_specific_scaling, -ABS_MAX_DEVICE, ABS_MAX_DEVICE
+    )
     data = _center_channels(data)
     return data
