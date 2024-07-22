@@ -8,7 +8,7 @@ LABEL_NAMES = ["idle", "snake", "updown", "wave"]
 
 
 def load_gesture_data(
-    data_root: Path, training: bool, window_size: int = 125, stride: int = 1
+    data_root: Path, training: bool, window_size: int, stride: int
 ) -> tuple[np.ndarray, np.ndarray]:
     split = "training" if training else "testing"
 
