@@ -1,6 +1,6 @@
 from collections.abc import Callable
 from pathlib import Path
-from typing import Optional
+from typing import Any, Optional
 
 import torch
 from torch.utils.data import Dataset
@@ -37,5 +37,5 @@ class GestureDataset(Dataset):
     def __len__(self) -> int:
         return len(self._labels)
 
-    def __getitem__(self, idx: int) -> tuple[torch.Tensor, torch.Tensor]:
+    def __getitem__(self, idx: Any) -> tuple[torch.Tensor, torch.Tensor]:
         return self._samples[idx], self._labels[idx]
