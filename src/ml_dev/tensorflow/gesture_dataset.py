@@ -1,48 +1,17 @@
 from pathlib import Path
 
-import cbor2
-import numpy as np
 import tensorflow as tf
 
-
-LABEL_NAMES = ["idle", "snake", "updown", "wave"]
+from ml_dev.gesture_dataset import (
+    LABEL_NAMES,
+    load_gesture_data as _load_raw_gesture_data,
+)
 
 
 def load_gesture_data(
     data_root: Path, training: bool, window_size: int = 125, stride: int = 1
 ) -> tuple[tf.Tensor, tf.Tensor]:
-    split = "training" if training else "testing"
-
-    sample_fragments, label_fragments = [], []
-
-    for label_idx, name in enumerate(LABEL_NAMES):
-        for file_path in (data_root / split).glob(f"{name}.*.cbor"):
-            with file_path.open("rb") as in_file:
-                raw_obj = cbor2.load(in_file)
-                signal = np.array(raw_obj["payload"]["values"], dtype=np.float32)
-                windows = _extract_running_windows(signal, window_size, stride)
-                labels = tf.one_hot([label_idx] * len(windows), depth=len(LABEL_NAMES))
-
-                sample_fragments.append(windows)
-                label_fragments.append(labels)
-
-    samples = tf.convert_to_tensor(np.concatenate(sample_fragments))
-    labels = tf.convert_to_tensor(np.concatenate(label_fragments))
-
+    samples, labels = _load_raw_gesture_data(data_root, training, window_size, stride)
+    samples = tf.convert_to_tensor(samples)
+    labels = tf.one_hot(labels, depth=len(LABEL_NAMES))
     return samples, labels
-
-
-def _extract_running_windows(
-    signal: np.ndarray, window_size: int, stride: int
-) -> np.ndarray:
-    signal_length, _ = signal.shape
-
-    if signal_length - window_size < 0:
-        raise ValueError(
-            f"Signal with length {signal_length} cannot divided into windows of size {window_size}."
-        )
-
-    start_indices = range(0, signal_length - window_size + 1, stride)
-    windows = [signal[i : i + window_size] for i in start_indices]
-
-    return np.stack(windows)
