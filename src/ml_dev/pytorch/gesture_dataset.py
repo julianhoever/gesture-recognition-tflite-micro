@@ -29,6 +29,8 @@ class GestureDataset(Dataset):
         self._samples = torch.tensor(raw_samples)
         self._labels = torch.tensor(raw_labels)
 
+        self._samples = torch.transpose(self._samples, -2, -1)
+
         if transform_samples is not None:
             self._samples = transform_samples(self._samples)
 

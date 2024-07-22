@@ -5,7 +5,7 @@ ABS_MAX_DEVICE = 511
 
 
 def _center_channels(data: torch.Tensor) -> torch.Tensor:
-    mean = torch.unsqueeze(torch.mean(data, dim=-2), dim=-2)
+    mean = torch.unsqueeze(torch.mean(data, dim=-1), dim=-1)
     return data - mean
 
 
