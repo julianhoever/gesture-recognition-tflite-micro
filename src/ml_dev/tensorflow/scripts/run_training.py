@@ -4,10 +4,15 @@ import keras
 import tensorflow as tf
 import matplotlib.pyplot as plt
 
-from ml_dev.gesture_dataset import load_gesture_data
-from ml_dev.preprocessing import preprocess
-from ml_dev.gesture_cnn_model import gesture_cnn_model
-from ml_dev.environment import DATA_ROOT, OUTPUTS_DIR, MODEL_WEIGHTS_FILE, SAMPLE_SHAPE
+from ml_dev.tensorflow.gesture_dataset import load_gesture_data
+from ml_dev.tensorflow.preprocessing import preprocess
+from ml_dev.tensorflow.gesture_cnn_model import gesture_cnn_model
+from ml_dev.environment import (
+    DATA_ROOT,
+    OUTPUTS_DIR,
+    TF_MODEL_WEIGHTS_FILE,
+    SAMPLE_SHAPE,
+)
 
 
 def main() -> None:
@@ -31,14 +36,14 @@ def main() -> None:
         shuffle=True,
         callbacks=[
             keras.callbacks.ModelCheckpoint(
-                filepath=MODEL_WEIGHTS_FILE,
+                filepath=TF_MODEL_WEIGHTS_FILE,
                 monitor="val_categorical_accuracy",
                 save_best_only=True,
                 save_weights_only=True,
             )
         ],
     )
-    model.load_weights(MODEL_WEIGHTS_FILE)
+    model.load_weights(TF_MODEL_WEIGHTS_FILE)
     model.evaluate(x=x_val, y=y_val)
 
     _plot_train_history(history)

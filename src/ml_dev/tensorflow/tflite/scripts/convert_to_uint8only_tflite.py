@@ -3,12 +3,12 @@ from typing import Any
 
 import tensorflow as tf
 
-from ml_dev.gesture_cnn_model import gesture_cnn_model
-from ml_dev.gesture_dataset import load_gesture_data
-from ml_dev.preprocessing import preprocess
+from ml_dev.tensorflow.gesture_cnn_model import gesture_cnn_model
+from ml_dev.tensorflow.gesture_dataset import load_gesture_data
+from ml_dev.tensorflow.preprocessing import preprocess
 from ml_dev.environment import (
     DATA_ROOT,
-    MODEL_WEIGHTS_FILE,
+    TF_MODEL_WEIGHTS_FILE,
     TFLITE_MODEL_FILE,
     SAMPLE_SHAPE,
 )
@@ -26,7 +26,7 @@ def representative_dataset() -> Generator[list[tf.Tensor], Any, Any]:
 
 def main() -> None:
     model = gesture_cnn_model((None, *SAMPLE_SHAPE))
-    model.load_weights(MODEL_WEIGHTS_FILE)
+    model.load_weights(TF_MODEL_WEIGHTS_FILE)
 
     converter = tf.lite.TFLiteConverter.from_keras_model(model)
     converter.optimizations = [tf.lite.Optimize.DEFAULT]

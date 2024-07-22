@@ -2,10 +2,10 @@ from functools import partial
 
 import tensorflow as tf
 
-from ml_dev.gesture_cnn_model import gesture_cnn_model
-from ml_dev.gesture_dataset import load_gesture_data
-from ml_dev.preprocessing import preprocess
-from ml_dev.environment import DATA_ROOT, MODEL_WEIGHTS_FILE, SAMPLE_SHAPE
+from ml_dev.tensorflow.gesture_cnn_model import gesture_cnn_model
+from ml_dev.tensorflow.gesture_dataset import load_gesture_data
+from ml_dev.tensorflow.preprocessing import preprocess
+from ml_dev.environment import DATA_ROOT, TF_MODEL_WEIGHTS_FILE, SAMPLE_SHAPE
 
 
 def main() -> None:
@@ -17,7 +17,7 @@ def main() -> None:
     x_train, x_val = preprocess(x_train), preprocess(x_val)
 
     model = gesture_cnn_model((None, *SAMPLE_SHAPE))
-    model.load_weights(MODEL_WEIGHTS_FILE)
+    model.load_weights(TF_MODEL_WEIGHTS_FILE)
 
     pred_train = model.predict(x_train)
     pred_val = model.predict(x_val)

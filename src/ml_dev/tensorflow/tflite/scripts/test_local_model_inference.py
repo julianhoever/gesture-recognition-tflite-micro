@@ -1,8 +1,8 @@
 import numpy as np
 
-from ml_dev.gesture_dataset import load_gesture_data
-from ml_dev.preprocessing import preprocess
-from ml_dev.tflite.execute_tflite_model import execute_uint8_tflite_model
+from ml_dev.tensorflow.gesture_dataset import load_gesture_data
+from ml_dev.tensorflow.preprocessing import preprocess
+from ml_dev.tensorflow.tflite.execute_tflite_model import execute_uint8_tflite_model
 from ml_dev.environment import DATA_ROOT, TFLITE_MODEL_FILE, SAMPLE_SHAPE
 
 
