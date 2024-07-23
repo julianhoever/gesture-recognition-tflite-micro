@@ -168,7 +168,3 @@ data/*
 !data/README.md
 
 outputs/
-
-# Submodules
-src/hardware/pico-tflmicro
-src/hardware/executorch
