@@ -12,6 +12,8 @@ dependencies:
   - keras
   - mypy
   - black
+  - tomli
+  - zstd
   - pip
   - pip:
     - --editable .
