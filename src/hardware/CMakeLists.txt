@@ -4,6 +4,8 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED On)
 
 set(PICO_SDK_FETCH_FROM_GIT Off)
+set(PICO_SDK_PATH ${CMAKE_SOURCE_DIR}/third_party/pico-sdk)
+
 include(pico_sdk_import.cmake)
 
 project(gesture_recognition)
