@@ -1,9 +1,0 @@
-[submodule "src/hardware/pico-tflmicro"]
-    path = src/hardware/pico-tflmicro
-    url = https://github.com/raspberrypi/pico-tflmicro.git
-    branch = main
-
-[submodule "src/hardware/executorch"]
-    path = src/hardware/executorch
-    url = https://github.com/pytorch/executorch.git
-    branch = v0.2.1
