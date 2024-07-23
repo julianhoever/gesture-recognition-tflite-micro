@@ -12,5 +12,5 @@ pico_sdk_init()
 
 add_subdirectory(sensors)
 add_subdirectory(setup)
-add_subdirectory(pico-tflmicro)
 add_subdirectory(app)
+add_subdirectory(third_party)
