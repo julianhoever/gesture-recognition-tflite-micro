@@ -3,14 +3,23 @@
 ## Prerequisites
 - [Anaconda / Miniconda](https://docs.anaconda.com/miniconda/#quick-command-line-install)
 
-## Install (ML Dev)
+## Install
+
+1. Clone repo
 ```bash
 git clone git@github.com:julianhoever/gesture-recognition-tflite-rp2040.git
-
 cd gesture-recognition-tflite-rp2040
+```
 
+2. When interested in the hardware implementation: Initialize submodules
+```bash
+git submodule sync
+git submodule update --init --recursive
+```
+
+3. When interested in the machine learning part: Create conda environment
+```bash
 conda env create -f environment.yml
-
 conda activate gesture-recognition-tflite-rp2040
 ```
 
