@@ -6,6 +6,6 @@
 	path = src/hardware/third_party/pico-sdk
 	url = https://github.com/raspberrypi/pico-sdk.git
 	branch = master
-[submodule "hardware/third_party/executorch"]
-	path = src/hardware/third_party/executorch
-	url = https://github.com/pytorch/executorch.git
+[submodule "hardware/third_party/cmsis-nn"]
+	path = src/hardware/third_party/CMSIS-NN
+	url = https://github.com/ARM-software/CMSIS-NN.git
