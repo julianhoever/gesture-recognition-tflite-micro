@@ -51,7 +51,7 @@ TfLiteInterpreter interpreter = getInterpreter();
 
 
 void displayPredictedClass(float* predictions) {
-    if (predictions[clsIdle] >= 0.9) {
+    if (predictions[clsIdle] >= 0.7) {
         setRgbLed(0, 0, 0);
     }
     else {
