@@ -14,7 +14,6 @@ target_link_libraries(tensorflow_app
     led_lib
     ml_utils
     pico_stdlib
-    hardware_pwm
     pico-tflmicro
 )
 
