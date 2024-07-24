@@ -26,7 +26,7 @@ conda activate gesture-recognition-tflite-rp2040
 ## What works?
 - TensorFlow -> TensorFlow Lite -> MCU
 
-## What does not work?
+## What does (currently) not work?
 - PyTorch -> ? -> Hardware
     - PyTorch -> ONNX -> TensorFlow -> TensorFlow Lite -> MCU
         - [ONNX-TF](https://github.com/onnx/onnx-tensorflow)
@@ -36,8 +36,16 @@ conda activate gesture-recognition-tflite-rp2040
             - Very new tool by Google
             - At least for me, not usable at this point
                 - Maybe improves in the future
-
+    - PyTorch -> MCU
+        - [ExecuTorch](https://pytorch.org/executorch-overview)
+            - Looks promising but cannot be tested because I cannot install it
+    - PyTorch -> Manual implementation -> MCU
+        - [CMSIS-NN](https://arm-software.github.io/CMSIS-NN/latest/index.html)
+            - Used by TensorFlow Lite
+            - Very manual way
+            - Model needs to be written in C/C++ code and all parameters must be extracted from the python model
+            - Needs more work to get this working
+            - To automate this process feels like, creating a second "Creator" tool...
 
 ## Still open...
-- PyTorch -> MCU
-    - [ExecuTorch](https://pytorch.org/executorch-overview)
+- ???
