@@ -12,7 +12,7 @@ project(gesture_recognition CXX C ASM)
 
 pico_sdk_init()
 
+add_subdirectory(app)
 add_subdirectory(hw_lib)
 add_subdirectory(ml_utils)
 add_subdirectory(third_party)
-add_subdirectory(tensorflow_app)
