@@ -10,10 +10,10 @@ dependencies:
   - numpy
   - cbor2
   - keras
+  - onnx
+  - onnxruntime
   - mypy
   - black
-  - tomli
-  - zstd
   - pip
   - pip:
     - --editable .

@@ -1,4 +1,7 @@
+from pathlib import Path
 import torch
+
+# import torch.onnx
 import torch.ao.quantization
 
 from ml_dev.pytorch.gesture_cnn_model import GestureCnnModel
@@ -9,6 +12,7 @@ from ml_dev.environment import (
     DATA_ROOT,
     PT_MODEL_WEIGHTS_FILE,
     SAMPLE_SHAPE,
+    PT_ONNX_MODEL_FILE,
 )
 
 
@@ -26,9 +30,7 @@ def main() -> None:
     load_weights(model_fp32, PT_MODEL_WEIGHTS_FILE)
 
     model_int8 = _quantize(model_fp32, calibration_samples)
-
-    for name, module in model_int8.named_modules():
-        print(f"[{name}]")
+    _export_onnx(model_int8, PT_ONNX_MODEL_FILE)
 
 
 def _quantize(
@@ -44,6 +46,25 @@ def _quantize(
     model_int8 = torch.ao.quantization.convert(model_fp32)
 
     return model_int8
+
+
+def _export_onnx(model: torch.nn.Module, destination: Path) -> None:
+    model.eval()
+    dummy_input = torch.randn(1, *SAMPLE_SHAPE[::-1])
+    torch.onnx.export(
+        model=model,
+        args=dummy_input,
+        f=str(destination),
+        export_params=True,
+        opset_version=19,
+        do_constant_folding=True,
+        input_names=["input"],
+        output_names=["output"],
+        dynamic_axes=dict(
+            input={0: "batch_size"},
+            output={0: "batch_size"},
+        ),
+    )
 
 
 if __name__ == "__main__":

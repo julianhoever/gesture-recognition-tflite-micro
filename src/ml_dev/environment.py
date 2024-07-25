@@ -14,7 +14,7 @@ TF_CPP_ARRAY_MODEL_FILE = TF_OUTPUTS_DIR / "model.cpp"
 
 PT_OUTPUTS_DIR = OUTPUTS_DIR / "pytorch"
 PT_MODEL_WEIGHTS_FILE = PT_OUTPUTS_DIR / "model.weights.pt"
-PT_TFLITE_MODEL_FILE = PT_OUTPUTS_DIR / "model.tflite"
+PT_ONNX_MODEL_FILE = PT_OUTPUTS_DIR / "model.onnx"
 PT_CPP_ARRAY_MODEL_FILE = PT_OUTPUTS_DIR / "model.cpp"
 
 # ML Constants
