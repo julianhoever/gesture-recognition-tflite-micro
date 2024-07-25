@@ -81,7 +81,7 @@ def train_model(
         history.log("loss", train_loss, test_loss)
         history.log("accuracy", train_accuracy, test_accuracy)
 
-        if load_best and test_accuracy > best_test_accuracy:
+        if load_best and test_accuracy >= best_test_accuracy:
             best_test_accuracy = test_accuracy
             best_model_state = deepcopy(model.state_dict())
 
