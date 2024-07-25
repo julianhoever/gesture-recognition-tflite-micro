@@ -41,6 +41,13 @@ def _quantize(
     torch.backends.quantized.engine = "qnnpack"
     model_fp32.qconfig = torch.ao.quantization.get_default_qconfig("qnnpack")
 
+    model_fp32 = torch.ao.quantization.fuse_modules(
+        model=model_fp32,
+        modules_to_fuse=[
+            [f"{block}.{layer}" for layer in ["pw_conv", "batchnorm"]]
+            for block in ["conv0", "conv1"]
+        ],
+    )
     model_fp32 = torch.ao.quantization.prepare(model_fp32)
     model_fp32(calibration_samples)
     model_int8 = torch.ao.quantization.convert(model_fp32)
