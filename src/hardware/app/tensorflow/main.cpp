@@ -18,7 +18,7 @@
 #define DEBUG_PRINT_FPS false
 #define DEBUG_PRINT_CLASS_PROBS true
 
-const uint32_t TENSOR_ARENA_SIZE = 1024 * 100;
+const uint32_t TENSOR_ARENA_SIZE = 1024 * 20;
 const uint32_t CHANNEL_COUNT = 3;
 const uint32_t INPUT_FEATURE_COUNT = CHANNEL_COUNT * 125;
 const uint32_t OUTPUT_FEATURE_COUNT = 4;
