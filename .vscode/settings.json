@@ -1,0 +1,25 @@
+{
+    "python.analysis.typeCheckingMode": "basic",
+    "python.analysis.autoImportCompletions": true,
+    "cmake.sourceDirectory": "${workspaceFolder}/src/hardware",
+    "cmake.buildDirectory": "${workspaceFolder}/build",
+    "cmake.configureOnOpen": false,
+    "cmake.configureSettings": {},
+    "git.detectSubmodules": false,
+    "files.exclude": {
+        "**/.git": true,
+        "**/.svn": true,
+        "**/.hg": true,
+        "**/CVS": true,
+        "**/.DS_Store": true,
+        "**/Thumbs.db": true,
+        "**/__pycache__": true,
+        "**/*.egg-info": true
+    },
+    "[python]": {
+        "editor.formatOnSave": true,
+    },
+    "files.associations": {
+        "cstdio": "cpp"
+    }
+}
