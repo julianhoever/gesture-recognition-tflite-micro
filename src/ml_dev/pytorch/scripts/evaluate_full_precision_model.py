@@ -16,13 +16,17 @@ from ml_dev.environment import (
 
 
 def main() -> None:
-    model = GestureCnnModel()
-    load_weights(model, PT_MODEL_WEIGHTS_FILE)
-
+    model = _load_model()
     ds_train, ds_test = _get_datasets()
 
     print(f"Train Accuracy: {_compute_accuracy(model, ds_train):.04f}")
     print(f"Validation Accuracy: {_compute_accuracy(model, ds_test):.04f}")
+
+
+def _load_model() -> GestureCnnModel:
+    model = GestureCnnModel()
+    load_weights(model, PT_MODEL_WEIGHTS_FILE)
+    return model
 
 
 def _get_datasets() -> tuple[GestureDataset, GestureDataset]:
