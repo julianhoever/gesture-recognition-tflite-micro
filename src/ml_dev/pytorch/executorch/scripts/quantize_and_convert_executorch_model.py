@@ -21,19 +21,7 @@ def main() -> None:
     calibration_samples = _load_calibration_samples()
     model_fp32 = _load_model()
     model_int8 = _quantize(model_fp32, calibration_samples)
-
-    dummy_inputs = torch.ones(*SAMPLE_SHAPE[::-1])
-    aten_dialect = export(model_int8, (dummy_inputs,))
-    edge_program = to_edge(aten_dialect)
-    executorch_program = edge_program.to_executorch()
-    with PT_EXECUTORCH_MODEL_FILE.open("wb") as out_file:
-        out_file.write(executorch_program.buffer)
-
-
-def _load_model() -> GestureCnnModel:
-    model = GestureCnnModel()
-    load_weights(model, PT_MODEL_WEIGHTS_FILE)
-    return model
+    _export_executorch(model_int8)
 
 
 def _load_calibration_samples() -> torch.Tensor:
@@ -45,6 +33,12 @@ def _load_calibration_samples() -> torch.Tensor:
         transform_samples=preprocess,
     )
     return ds[:][0]
+
+
+def _load_model() -> GestureCnnModel:
+    model = GestureCnnModel()
+    load_weights(model, PT_MODEL_WEIGHTS_FILE)
+    return model
 
 
 def _quantize(
@@ -68,6 +62,15 @@ def _quantize(
     model_int8 = torch.ao.quantization.convert(model_fp32)
 
     return model_int8
+
+
+def _export_executorch(model: torch.nn.Module) -> None:
+    dummy_inputs = torch.ones(*SAMPLE_SHAPE[::-1])
+    aten_dialect = export(model, (dummy_inputs,))
+    edge_program = to_edge(aten_dialect)
+    executorch_program = edge_program.to_executorch()
+    with PT_EXECUTORCH_MODEL_FILE.open("wb") as out_file:
+        out_file.write(executorch_program.buffer)
 
 
 if __name__ == "__main__":
