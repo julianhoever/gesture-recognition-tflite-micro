@@ -3,16 +3,16 @@ import torch.ao.quantization
 from torch.export import export
 from executorch.exir import to_edge
 
+from ml_dev.pytorch.gesture_cnn_model import GestureCnnModel
+from ml_dev.pytorch.gesture_dataset import GestureDataset
+from ml_dev.pytorch.persistence import load_weights
+from ml_dev.pytorch.preprocessing import preprocess
 from ml_dev.environment import (
     DATA_ROOT,
     PT_MODEL_WEIGHTS_FILE,
     PT_EXECUTORCH_MODEL_FILE,
     SAMPLE_SHAPE,
 )
-from ml_dev.pytorch.gesture_cnn_model import GestureCnnModel
-from ml_dev.pytorch.gesture_dataset import GestureDataset
-from ml_dev.pytorch.persistence import load_weights
-from ml_dev.pytorch.preprocessing import preprocess
 
 
 def main() -> None:
