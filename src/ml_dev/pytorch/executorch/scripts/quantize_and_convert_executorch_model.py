@@ -1,7 +1,5 @@
-from pathlib import Path
-from typing import cast
-
 import torch
+import torch.ao.quantization
 from torch.export import export
 from executorch.exir import to_edge
 
