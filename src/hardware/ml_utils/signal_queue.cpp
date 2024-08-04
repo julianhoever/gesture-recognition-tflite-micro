@@ -25,7 +25,7 @@ void SignalQueue::add(int16_t values[]) {
     
     if (this->isFilled() && this->hasEventHandler()) {
         if (this->overflowNotificationRequired()) {
-            this->eventHandler(this);
+            this->eventHandler(*this);
         }
         this->overflowCounter %= this->notifyAtEveryNthOverflow;
     }
@@ -42,7 +42,7 @@ void SignalQueue::copyToBuffer(float buffer[]) {
 
 void SignalQueue::notifyOnOverflowingElement(
         uint32_t atEveryNthElement,
-        void (*eventHandler)(SignalQueue*)) {
+        void (*eventHandler)(SignalQueue&)) {
     this->eventHandler = eventHandler;
     this->notifyAtEveryNthOverflow =  atEveryNthElement;
 }

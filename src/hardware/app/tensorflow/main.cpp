@@ -1,6 +1,7 @@
 #include <cstdio>
 #include <cstdint>
 #include <cmath>
+#include <memory>
 
 #include "pico/stdio.h"
 #include "pico/stdlib.h"
@@ -24,10 +25,11 @@ const uint32_t INPUT_FEATURE_COUNT = CHANNEL_COUNT * 125;
 const uint32_t OUTPUT_FEATURE_COUNT = 4;
 const uint32_t INFERENCE_EVERY_NTH_POINTS = 10;
 enum TargetClasses { clsIdle, clsSnake, clsUpDown, clsWave, clsUndefined };
+std::unique_ptr<TfLiteInterpreter> interpreter = nullptr;
 
 
-TfLiteInterpreter getInterpreter() {
-    tflite::MicroMutableOpResolver<11>* resolver = new tflite::MicroMutableOpResolver<11>();
+std::unique_ptr<TfLiteInterpreter> getInterpreter() {
+    std::unique_ptr<tflite::MicroMutableOpResolver<11>> resolver(new tflite::MicroMutableOpResolver<11>());
     resolver->AddQuantize();
     resolver->AddExpandDims();
     resolver->AddDepthwiseConv2D();
@@ -40,14 +42,11 @@ TfLiteInterpreter getInterpreter() {
     resolver->AddFullyConnected();
     resolver->AddSoftmax();
 
-    TfLiteInterpreter interpreter(model_tflite, *resolver, TENSOR_ARENA_SIZE);
-    interpreter.initialize();
+    std::unique_ptr<TfLiteInterpreter> interpreter(new TfLiteInterpreter(model_tflite, *resolver, TENSOR_ARENA_SIZE));
+    interpreter->initialize();
 
     return interpreter;
 }
-
-
-TfLiteInterpreter interpreter = getInterpreter();
 
 
 void displayPredictedClass(float* predictions) {
@@ -63,13 +62,13 @@ void displayPredictedClass(float* predictions) {
 }
 
 
-void runInference(SignalQueue* queue) {
+void runInference(SignalQueue& queue) {
     static float inputBuffer[INPUT_FEATURE_COUNT];
     float outputBuffer[OUTPUT_FEATURE_COUNT];
 
-    queue->copyToBuffer(inputBuffer);
+    queue.copyToBuffer(inputBuffer);
     centerChannels(inputBuffer, INPUT_FEATURE_COUNT, CHANNEL_COUNT);
-    interpreter.runInference(inputBuffer, outputBuffer);
+    interpreter->runInference(inputBuffer, outputBuffer);
 
 #if DEBUG_PRINT_CLASS_PROBS
     printf(
@@ -86,6 +85,7 @@ int main() {
     initializePeripherals();
     setup_adxl345();
 
+    interpreter = getInterpreter();
     SignalQueue queue(INPUT_FEATURE_COUNT, CHANNEL_COUNT);
     queue.notifyOnOverflowingElement(INFERENCE_EVERY_NTH_POINTS, runInference);
 

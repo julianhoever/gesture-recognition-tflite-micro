@@ -34,7 +34,7 @@ void displayPredictedClass(float* predictions) {
 }
 
 
-void runInference(SignalQueue* queue) {
+void runInference(SignalQueue& queue) {
     float predictions[] = {0.1, 0.2, 0.6, 0.1};
     displayPredictedClass(predictions);
 }
