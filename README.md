@@ -18,7 +18,7 @@ git submodule sync
 git submodule update --init --recursive
 ```
 
-3. When interested in the machine learning part: Create conda environment
+3. When interested in the machine learning part: Create conda environment and install dependencies using poetry
 ```bash
 conda create -n gesture-recognition-tflite-micro python=3.12
 conda activate gesture-recognition-tflite-micro
