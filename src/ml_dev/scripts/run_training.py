@@ -4,19 +4,19 @@ import keras
 import tensorflow as tf
 import matplotlib.pyplot as plt
 
-from ml_dev.tensorflow.gesture_dataset import load_gesture_data
-from ml_dev.tensorflow.preprocessing import preprocess
-from ml_dev.tensorflow.gesture_cnn_model import gesture_cnn_model
+from ml_dev.gesture_dataset import load_gesture_data
+from ml_dev.preprocessing import preprocess
+from ml_dev.gesture_cnn_model import gesture_cnn_model
 from ml_dev.environment import (
     DATA_ROOT,
-    TF_OUTPUTS_DIR,
-    TF_MODEL_WEIGHTS_FILE,
+    OUTPUTS_DIR,
+    MODEL_WEIGHTS_FILE,
     SAMPLE_SHAPE,
 )
 
 
 def main() -> None:
-    TF_OUTPUTS_DIR.mkdir(parents=True, exist_ok=True)
+    OUTPUTS_DIR.mkdir(parents=True, exist_ok=True)
 
     (x_train, y_train), (x_val, y_val) = _load_data()
     model = gesture_cnn_model((None, *SAMPLE_SHAPE))
@@ -36,14 +36,14 @@ def main() -> None:
         shuffle=True,
         callbacks=[
             keras.callbacks.ModelCheckpoint(
-                filepath=TF_MODEL_WEIGHTS_FILE,
+                filepath=MODEL_WEIGHTS_FILE,
                 monitor="val_categorical_accuracy",
                 save_best_only=True,
                 save_weights_only=True,
             )
         ],
     )
-    model.load_weights(TF_MODEL_WEIGHTS_FILE)
+    model.load_weights(MODEL_WEIGHTS_FILE)
     model.evaluate(x=x_val, y=y_val)
 
     _plot_train_history(history)
@@ -66,7 +66,7 @@ def _plot_train_history(history: keras.callbacks.History) -> None:
     fig, ax = plt.subplots(nrows=1, ncols=1)
     ax.plot(history.history["loss"])
     ax.plot(history.history["val_loss"])
-    fig.savefig(TF_OUTPUTS_DIR / "train_history.png")
+    fig.savefig(OUTPUTS_DIR / "train_history.png")
 
 
 if __name__ == "__main__":
