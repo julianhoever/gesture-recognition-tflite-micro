@@ -2,7 +2,3 @@
 	path = src/hardware/third_party/pico-tflmicro
 	url = https://github.com/raspberrypi/pico-tflmicro.git
 	branch = main
-[submodule "hardware/third_party/pico-sdk"]
-	path = src/hardware/third_party/pico-sdk
-	url = https://github.com/raspberrypi/pico-sdk.git
-	branch = master
